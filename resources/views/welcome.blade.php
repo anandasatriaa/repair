@@ -28,27 +28,230 @@
 
     <!-- Main CSS File -->
     <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
+
+    <style>
+        .topbar {
+            background-color: #e3001c;
+            padding: 2px 0;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .topbar-title {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .topbar a,
+        .topbar i {
+            color: #ffffff !important;
+            text-decoration: none;
+        }
+
+        .topbar a:hover {
+            text-decoration: underline;
+            color: #ffffff;
+        }
+
+        .card-hover {
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .card-hover:hover {
+            background-color: #e3001c;
+            color: white;
+        }
+
+        .card-hover:hover i {
+            color: white !important;
+        }
+
+        .card-hover:hover h4,
+        .card-hover:hover p {
+            color: white;
+        }
+
+        .card-hover:hover img {
+            filter: brightness(0) invert(1);
+        }
+
+        /* Testimonial Section */
+        .testimonial {
+            padding: 80px 0;
+            background-color: #f8f9fa;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .testimonial-card::before {
+            content: " ";
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 5rem;
+            font-family: Georgia, serif;
+            color: #f1f2f6;
+            line-height: 1;
+            z-index: 0;
+        }
+
+        .testimonial-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #2d3436;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .rating {
+            margin-bottom: 20px;
+            display: flex;
+        }
+
+        .rating i {
+            color: #FFD700;
+            font-size: 1.2rem;
+            margin-right: 3px;
+        }
+
+        .customer-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px;
+            background: #e3001c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .customer-details h4 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            margin-top: 15px;
+        }
+
+        .customer-details p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .testimonial {
+                padding: 60px 0;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .testimonial-carousel {
+                padding: 0 20px;
+            }
+
+            .swiper-button-next2,
+            .swiper-button-prev2 {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+
+            .section-title p {
+                font-size: 0.95rem;
+            }
+
+            .testimonial-card {
+                padding: 20px;
+            }
+
+            .testimonial-text {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
 </head>
 
 <body class="index-page">
 
+    <!-- Top Bar -->
+    <div class="topbar d-flex align-items-center fixed-top">
+        <div class="container d-flex justify-content-between align-items-center">
+
+            <div class="contact-info d-flex align-items-center">
+                <i class="bi bi-envelope me-1"></i><a href="mailto:info@ccas.co.id">info@ccas.co.id</a>
+                <span class="d-none d-md-flex"><i class="bi bi-phone ms-4 me-1"></i>(021) 6311133</span>
+                <i class="bi bi-instagram ms-4 me-1"></i><a href="https://www.instagram.com/rupesindonesia/"
+                    target="_blank">@rupesindonesia</a>
+                <span class="d-none d-md-flex"><i class="bi bi-instagram ms-4 me-1"></i><a
+                        href="https://www.instagram.com/mileniagroup/" target="_blank">@mileniagroup</a></span>
+            </div>
+
+            <div class="social-links d-none d-lg-flex align-items-center">
+                <div class="topbar-title text-white text-center">
+                    Service Center Milenia Group
+                </div>
+            </div>
+        </div>
+    </div>
     <header id="header" class="header d-flex align-items-center fixed-top">
         <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-            <a href="index.html" class="logo d-flex align-items-center me-auto">
-                <!-- Uncomment the line below if you also wish to use an image logo -->
-                <!-- <img src="assets/img/logo.png" alt=""> -->
-                <h1 class="sitename">eBusiness</h1>
+            <a href="#" class="logo d-flex align-items-center me-auto">
+                <img src="{{ asset('assets/img/logo.png') }}" alt="">
+                {{-- <h1 class="sitename">eBusiness</h1> --}}
             </a>
 
             <nav id="navmenu" class="navmenu">
                 <ul>
-                    <li><a href="#hero" class="active">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#portfolio">Portfolio</a></li>
-                    <li><a href="#team">Team</a></li>
-                    <li class="dropdown"><a href="#"><span>Dropdown</span> <i
+                    <li><a href="#hero" class="active">Beranda</a></li>
+                    <li><a href="#about">Tentang Kami</a></li>
+                    <li><a href="#services">Layanan</a></li>
+                    <li><a href="#why-us">Kenapa Kami</a></li>
+                    <li><a href="#testimonials">Testimoni</a></li>
+                    <li><a href="#pricing">Harga</a></li>
+                    {{-- <li class="dropdown"><a href="#"><span>Dropdown</span> <i
                                 class="bi bi-chevron-down toggle-dropdown"></i></a>
                         <ul>
                             <li><a href="#">Dropdown 1</a></li>
@@ -66,14 +269,11 @@
                             <li><a href="#">Dropdown 3</a></li>
                             <li><a href="#">Dropdown 4</a></li>
                         </ul>
-                    </li>
-                    <li><a href="#contact">Contact</a></li>
+                    </li> --}}
+                    <li><a href="#contact">Kontak</a></li>
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
-
-            <a class="btn-getstarted" href="index.html#about">Get Started</a>
-
         </div>
     </header>
 
@@ -82,39 +282,35 @@
         <!-- Hero Section -->
         <section id="hero" class="hero section dark-background">
 
-            <div id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel"
-                data-bs-interval="5000">
+            <div id="hero-carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
 
                 <div class="carousel-item active">
-                    <img src="{{ asset('assets/img/hero-carousel/hero-carousel-1.jpg') }}" alt="">
+                    <img src="{{ asset('assets/img/hero-carousel/slide1.jpg') }}" alt="">
                     <div class="carousel-container">
-                        <h2>We are professional</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat.</p>
-                        <a href="#featured-services" class="btn-get-started">Get Started</a>
+                        <h2>Servis Cepat & Efisien</h2>
+                        <p>Kami memahami pentingnya waktu Anda. Dapatkan layanan perbaikan dan perawatan untuk produk
+                            RUPES, NOCO, dan CTEK secara cepat tanpa mengurangi kualitas.</p>
+                        <a href="#services" class="btn-get-started">Lihat Layanan</a>
                     </div>
                 </div><!-- End Carousel Item -->
 
                 <div class="carousel-item">
-                    <img src="{{ asset('assets/img/hero-carousel/hero-carousel-2.jpg') }}" alt="">
+                    <img src="{{ asset('assets/img/hero-carousel/slide2.png') }}" alt="">
                     <div class="carousel-container">
-                        <h2>At vero eos et accusamus</h2>
-                        <p>Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id
-                            quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-                            Temporibus autem quibusdam et aut officiis debitis aut.</p>
-                        <a href="#featured-services" class="btn-get-started">Get Started</a>
+                        <h2>Tenaga Profesional Berpengalaman</h2>
+                        <p>Dukungan teknisi bersertifikat dan berpengalaman menjamin setiap unit Anda ditangani secara
+                            tepat, sesuai standar resmi dari RUPES, NOCO, dan CTEK.</p>
+                        <a href="#contact" class="btn-get-started">Hubungi Kami</a>
                     </div>
                 </div><!-- End Carousel Item -->
 
                 <div class="carousel-item">
-                    <img src="{{ asset('assets/img/hero-carousel/hero-carousel-3.jpg') }}" alt="">
+                    <img src="{{ asset('assets/img/hero-carousel/slide3.jpg') }}" alt="">
                     <div class="carousel-container">
-                        <h2>Temporibus autem quibusdam</h2>
-                        <p>Beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur
-                            aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi
-                            nesciunt omnis iste natus error sit voluptatem accusantium.</p>
-                        <a href="#featured-services" class="btn-get-started">Get Started</a>
+                        <h2>Layanan Handal & Terpercaya</h2>
+                        <p>Milenia Group menghadirkan layanan resmi dengan jaminan mutu untuk setiap produk yang kami
+                            tangani. Reservasi online kini lebih mudah dan cepat.</p>
+                        <a href="#" class="btn-get-started">Reservasi Sekarang</a>
                     </div>
                 </div><!-- End Carousel Item -->
 
@@ -137,8 +333,8 @@
 
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
-                <h2>About</h2>
-                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+                <h2><span style="color: #e3001c;">Tentang</span> Kami</h2>
+                <p>Kami adalah pusat layanan resmi untuk produk RUPES, NOCO, dan CTEK di Indonesia.</p>
             </div><!-- End Section Title -->
 
             <div class="container">
@@ -152,24 +348,40 @@
                     <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up"
                         data-aos-delay="200">
                         <div class="about-content ps-0 ps-lg-3">
-                            <h3>Voluptatem dignissimos provident quasi corporis voluptates sit assumenda.</h3>
+                            <h3>Layanan Resmi, Profesional, dan Terpercaya</h3>
                             <p class="fst-italic">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                                incididunt ut labore et dolore
-                                magna aliqua.
+                                Service Center Milenia Group menyediakan layanan perbaikan dan perawatan untuk berbagai
+                                perangkat otomotif dan kelistrikan dari brand RUPES, NOCO, dan CTEK. Kami juga
+                                menyediakan layanan purna jual seperti garansi, penggantian suku cadang, serta
+                                konsultasi teknis untuk memastikan pelanggan mendapatkan pengalaman terbaik.
                             </p>
                             <ul>
                                 <li>
-                                    <i class="bi bi-diagram-3"></i>
+                                    <i class="bi bi-gear-fill"></i>
                                     <div>
-                                        <h4>Ullamco laboris nisi ut aliquip consequat</h4>
-                                        <p>Magni facilis facilis repellendus cum excepturi quaerat praesentium libre
-                                            trade</p>
+                                        <h4>Dukungan Teknis Resmi</h4>
+                                        <p>Tim teknisi kami terlatih langsung oleh prinsipal brand dan siap memberikan
+                                            solusi cepat dan tepat sesuai standar resmi.</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="bi bi-clock-history"></i>
+                                    <div>
+                                        <h4>Layanan Cepat dan Efisien</h4>
+                                        <p>Proses pengecekan dan perbaikan dilakukan dengan sistem reservasi,
+                                            meminimalkan waktu tunggu pelanggan.</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="bi bi-shield-check"></i>
+                                    <div>
+                                        <h4>Jaminan Mutu & Garansi</h4>
+                                        <p>Setiap layanan dilengkapi jaminan kualitas dan garansi resmi agar Anda merasa
+                                            aman dan nyaman.</p>
                                     </div>
                                 </li>
                             </ul>
                         </div>
-
                     </div>
                 </div>
 
@@ -177,7 +389,7 @@
 
         </section><!-- /About Section -->
 
-        <!-- Services Section -->
+        {{-- <!-- Services Section -->
         <section id="services" class="services section">
 
             <!-- Section Title -->
@@ -272,79 +484,104 @@
 
             </div>
 
-        </section><!-- /Services Section -->
+        </section><!-- /Services Section --> --}}
 
-        <!-- Features Section -->
-        <section id="features" class="features section light-background">
+        <!-- Services Section -->
+        <section id="services" class="features section light-background">
 
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
-                <h2>Features</h2>
-                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+                <h2><span style="color: #e3001c;">Layanan</span> Service</h2>
+                <p>Kami menyediakan layanan perbaikan resmi untuk berbagai produk unggulan dengan kualitas terpercaya.
+                </p>
             </div><!-- End Section Title -->
 
             <div class="container">
 
-                <div class="row gy-4 justify-content-between features-item">
-
+                <!-- Polishing Machine -->
+                <div class="row mx-1 gy-4 justify-content-between features-item p-4 rounded shadow-sm"
+                    style="background-color: #eaeaea; border-left: 5px solid #e3001c; border-bottom: 5px solid #e3001c;">
                     <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-                        <img src="{{ asset('assets/img/features-1.jpg') }}" class="img-fluid" alt="">
+                        <img src="{{ asset('assets/img/rupes.png') }}" class="" style="width: 100%;"
+                            alt="Polishing Machine">
                     </div>
 
                     <div class="col-lg-5 d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
-                        <div class="content">
-                            <h3>Corporis temporibus maiores provident</h3>
-                            <p>
-                                Ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                                reprehenderit in voluptate
-                                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                                proident.
+                        <div class="">
+                            <h3 class="fw-bold" style="font-size: 2rem;">Polishing Machine</h3>
+                            <p style="font-size: 1.2rem; text-align: justify;">
+                                Mesin poles Rupes merupakan mesin yang digunakan untuk melakukan finishing agar
+                                menghasilkan kilap yang sempurna dan dapat juga digunakan untuk memperbaiki clear coat
+                                yang tidak sempurna.
                             </p>
-                            <a href="#" class="btn more-btn">Learn More</a>
+                            <a href="#reservation-form" class="btn"
+                                style="background-color: #e3001c; color: white;">
+                                Reservasi Perbaikan <i class="bi bi-arrow-up-right ms-1"></i>
+                            </a>
                         </div>
                     </div>
+                </div><!-- End Features Item -->
 
-                </div><!-- Features Item -->
-
-                <div class="row gy-4 justify-content-between features-item">
-
+                <!-- CTEK -->
+                <div class="row mx-1 gy-4 justify-content-between features-item p-4 rounded shadow-sm"
+                    style="background-color: #eaeaea; border-right: 5px solid #e3001c; border-bottom: 5px solid #e3001c;">
                     <div class="col-lg-5 d-flex align-items-center order-2 order-lg-1" data-aos="fade-up"
                         data-aos-delay="100">
-
-                        <div class="content">
-                            <h3>Neque ipsum omnis sapiente quod quia dicta</h3>
-                            <p>
-                                Quidem qui dolore incidunt aut. In assumenda harum id iusto lorena plasico mares
+                        <div class="">
+                            <h3 class="fw-bold" style="font-size: 2rem;">CTEK</h3>
+                            <p style="font-size: 1.2rem; text-align: justify;">
+                                Mesin Ctek merupakan mesin pengisi daya dan perawat baterai yang dapat mengisi daya dan
+                                merawat baterai kendaraan serta dapat menyesuaikan proses pengisian daya berdasarkan
+                                kebutuhan baterai.
                             </p>
-                            <ul>
-                                <li><i class="bi bi-easel flex-shrink-0"></i> Et corporis ea eveniet ducimus.</li>
-                                <li><i class="bi bi-patch-check flex-shrink-0"></i> Exercitationem dolorem sapiente.
-                                </li>
-                                <li><i class="bi bi-brightness-high flex-shrink-0"></i> Veniam quia modi magnam.</li>
-                            </ul>
-                            <p></p>
-                            <a href="#" class="btn more-btn">Learn More</a>
+                            <a href="#reservation-form" class="btn"
+                                style="background-color: #e3001c; color: white;">
+                                Reservasi Perbaikan <i class="bi bi-arrow-up-right ms-1"></i>
+                            </a>
                         </div>
-
                     </div>
 
                     <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="200">
-                        <img src="{{ asset('assets/img/features-2.jpg') }}" class="img-fluid" alt="">
+                        <img src="{{ asset('assets/img/ctek.png') }}" class="" style="width: 100%;"
+                            alt="CTEK">
+                    </div>
+                </div><!-- End Features Item -->
+
+                <!-- NOCO -->
+                <div class="row mx-1 gy-4 justify-content-between features-item p-4 rounded shadow-sm"
+                    style="background-color: #eaeaea; border-left: 5px solid #e3001c; border-bottom: 5px solid #e3001c;">
+                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
+                        <img src="{{ asset('assets/img/noco.png') }}" class="" style="width: 100%;"
+                            alt="NOCO">
                     </div>
 
-                </div><!-- Features Item -->
+                    <div class="col-lg-5 d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
+                        <div class="">
+                            <h3 class="fw-bold" style="font-size: 2rem;">NOCO</h3>
+                            <p style="font-size: 1.2rem; text-align: justify;">
+                                Mesin Noco merupakan alat pemantik listrik portabel yang berfungsi untuk menghidupkan
+                                kembali aki yang mati dan memiliki teknologi antipercikan dan perlindungan
+                                polaritas terbalik.
+                            </p>
+                            <a href="#reservation-form" class="btn"
+                                style="background-color: #e3001c; color: white;">
+                                Reservasi Perbaikan <i class="bi bi-arrow-up-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div><!-- End Features Item -->
 
             </div>
 
-        </section><!-- /Features Section -->
+        </section><!-- /Services Section -->
 
         <!-- Why Us Section -->
         <section id="why-us" class="why-us section">
 
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
-                <h2>Why Us</h2>
-                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+                <h2><span style="color: #e3001c;">Mengapa</span> Memilih Kami</h2>
+                <p>Kami berkomitmen memberikan layanan terbaik untuk setiap pelanggan kami.</p>
             </div><!-- End Section Title -->
 
             <div class="container">
@@ -352,29 +589,32 @@
                 <div class="row gy-4">
 
                     <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                        <div class="card-item">
-                            <span>01</span>
-                            <h4><a href="" class="stretched-link">Lorem Ipsum</a></h4>
-                            <p>Ulamco laboris nisi ut aliquip ex ea commodo consequat. Et consectetur ducimus vero
-                                placeat</p>
+                        <div class="card-item text-center p-4 card-hover">
+                            <div class="mb-3">
+                                <img src="{{ asset('assets/img/icon1.png') }}" alt="Layanan Cepat" height="80">
+                            </div>
+                            <h4 class="mb-2">Layanan Cepat</h4>
+                            <p>Memberikan layanan yang cepat dan responsif untuk setiap jasa service.</p>
                         </div>
                     </div><!-- Card Item -->
 
                     <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                        <div class="card-item">
-                            <span>02</span>
-                            <h4><a href="" class="stretched-link">Repellat Nihil</a></h4>
-                            <p>Dolorem est fugiat occaecati voluptate velit esse. Dicta veritatis dolor quod et vel dire
-                                leno para dest</p>
+                        <div class="card-item text-center p-4 card-hover">
+                            <div class="mb-3">
+                                <img src="{{ asset('assets/img/icon2.png') }}" alt="Layanan Cepat" height="80">
+                            </div>
+                            <h4 class="mb-2">Service Berkualitas</h4>
+                            <p>Mengutamakan kualitas dan hasil terbaik untuk setiap dari jasa service kami.</p>
                         </div>
                     </div><!-- Card Item -->
 
                     <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                        <div class="card-item">
-                            <span>03</span>
-                            <h4><a href="" class="stretched-link">Ad ad velit qui</a></h4>
-                            <p>Molestiae officiis omnis illo asperiores. Aut doloribus vitae sunt debitis quo vel nam
-                                quis</p>
+                        <div class="card-item text-center p-4 card-hover">
+                            <div class="mb-3">
+                                <img src="{{ asset('assets/img/icon3.png') }}" alt="Layanan Cepat" height="80">
+                            </div>
+                            <h4 class="mb-2">Berpengalaman</h4>
+                            <p>Teknisi yang berpengalaman, memberikan jasa pelayanan terbaik.</p>
                         </div>
                     </div><!-- Card Item -->
 
@@ -384,7 +624,157 @@
 
         </section><!-- /Why Us Section -->
 
-        <!-- Portfolio Section -->
+        <!-- Testimonial Section -->
+        <section id="testimonials" class="testimonial">
+            <div class="container">
+                <!-- Section Title -->
+                <div class="section-title">
+                    <h2><span style="color: #e3001c;">Testimoni</span> Pelanggan</h2>
+                    <p>Simak pengalaman dan pendapat pelanggan kami mengenai kualitas layanan serta produk yang kami
+                        tawarkan.</p>
+                </div>
+
+                <!-- Carousel Container -->
+                <div class="testimonial-carousel">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <!-- Testimonial 1 -->
+                            <div class="swiper-slide">
+                                <div class="testimonial-card">
+                                    <div class="testimonial-content">
+                                        <p class="testimonial-text">"Saya membawa polisher RUPES saya untuk service di
+                                            Milenia, dan hasilnya memuaskan. Tim teknisinya profesional dan
+                                            penanganannya cepat. Sangat direkomendasikan!"</p>
+                                        <div class="rating">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <div class="customer-info">
+                                            <div class="avatar">VH</div>
+                                            <div class="customer-details">
+                                                <h4>Vincent Halim</h4>
+                                                <p>Servis RUPES • 2025</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 2 -->
+                            <div class="swiper-slide">
+                                <div class="testimonial-card">
+                                    <div class="testimonial-content">
+                                        <p class="testimonial-text">"Beli charger CTEK MXS 5.0 dari sini, pengiriman
+                                            cepat dan dapat garansi resmi. Customer service-nya juga cepat tanggap kalau
+                                            ada pertanyaan. Sukses terus Milenia!"</p>
+                                        <div class="rating">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-half"></i>
+                                        </div>
+                                        <div class="customer-info">
+                                            <div class="avatar">CL</div>
+                                            <div class="customer-details">
+                                                <h4>Catherine Limantara</h4>
+                                                <p>Pembeli CTEK • 2024</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Testimonial 3 -->
+                            <div class="swiper-slide">
+                                <div class="testimonial-card">
+                                    <div class="testimonial-content">
+                                        <p class="testimonial-text">"Saya pakai NOCO Boost untuk mobil saya, dan
+                                            alatnya luar biasa! Terima kasih Milenia sudah bantu jelaskan cara
+                                            penggunaannya dengan jelas. Pelayanan ramah dan profesional."</p>
+                                        <div class="rating">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <div class="customer-info">
+                                            <div class="avatar">AS</div>
+                                            <div class="customer-details">
+                                                <h4>Adrian Santosa</h4>
+                                                <p>Pembeli NOCO • 2024</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Testimonials -->
+                            <div class="swiper-slide">
+                                <div class="testimonial-card">
+                                    <div class="testimonial-content">
+                                        <p class="testimonial-text">"Pengalaman belanja yang luar biasa! Produk asli
+                                            dan berkualitas tinggi. Staf sangat membantu dan ramah. Pengiriman sangat
+                                            cepat. Pasti akan berbelanja lagi di sini."</p>
+                                        <div class="rating">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                        </div>
+                                        <div class="customer-info">
+                                            <div class="avatar">DR</div>
+                                            <div class="customer-details">
+                                                <h4>Diana Ratnasari</h4>
+                                                <p>Pembeli NOCO • 2023</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="swiper-slide">
+                                <div class="testimonial-card">
+                                    <div class="testimonial-content">
+                                        <p class="testimonial-text">"Saya sangat terkesan dengan layanan purna jual.
+                                            Ketika ada masalah kecil dengan produk, tim support langsung merespons dan
+                                            menyelesaikannya dengan profesional."</p>
+                                        <div class="rating">
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star-fill"></i>
+                                            <i class="bi bi-star"></i>
+                                        </div>
+                                        <div class="customer-info">
+                                            <div class="avatar">RS</div>
+                                            <div class="customer-details">
+                                                <h4>Rizky Setiawan</h4>
+                                                <p>Servis RUPES • 2024</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        {{-- <div class="swiper-pagination2"></div> --}}
+
+                        <!-- Navigation buttons -->
+                        <div class="swiper-button-next2"></div>
+                        <div class="swiper-button-prev2"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- <!-- Portfolio Section -->
         <section id="portfolio" class="portfolio section">
 
             <!-- Section Title -->
@@ -410,8 +800,9 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/app-1.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/app-1.jpg') }}" class="img-fluid"
+                                <a href="{{ asset('assets/img/portfolio/app-1.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/app-1.jpg') }}" class="img-fluid"
                                         alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">App 1</a></h4>
@@ -422,8 +813,9 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/product-1.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/product-1.jpg') }}" class="img-fluid"
+                                <a href="{{ asset('assets/img/portfolio/product-1.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/product-1.jpg') }}" class="img-fluid"
                                         alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">Product 1</a></h4>
@@ -434,9 +826,10 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/branding-1.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/branding-1.jpg') }}"
-                                        class="img-fluid" alt=""></a>
+                                <a href="{{ asset('assets/img/portfolio/branding-1.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/branding-1.jpg') }}" class="img-fluid"
+                                        alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">Branding 1</a></h4>
                                     <p>Lorem ipsum, dolor sit amet consectetur</p>
@@ -446,8 +839,9 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/books-1.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/books-1.jpg') }}" class="img-fluid"
+                                <a href="{{ asset('assets/img/portfolio/books-1.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/books-1.jpg') }}" class="img-fluid"
                                         alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">Books 1</a></h4>
@@ -458,8 +852,9 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/app-2.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/app-2.jpg') }}" class="img-fluid"
+                                <a href="{{ asset('assets/img/portfolio/app-2.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/app-2.jpg') }}" class="img-fluid"
                                         alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">App 2</a></h4>
@@ -470,8 +865,9 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/product-2.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/product-2.jpg') }}" class="img-fluid"
+                                <a href="{{ asset('assets/img/portfolio/product-2.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/product-2.jpg') }}" class="img-fluid"
                                         alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">Product 2</a></h4>
@@ -482,9 +878,10 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/branding-2.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/branding-2.jpg') }}"
-                                        class="img-fluid" alt=""></a>
+                                <a href="{{ asset('assets/img/portfolio/branding-2.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/branding-2.jpg') }}" class="img-fluid"
+                                        alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">Branding 2</a></h4>
                                     <p>Lorem ipsum, dolor sit amet consectetur</p>
@@ -494,8 +891,9 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/books-2.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/books-2.jpg') }}" class="img-fluid"
+                                <a href="{{ asset('assets/img/portfolio/books-2.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/books-2.jpg') }}" class="img-fluid"
                                         alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">Books 2</a></h4>
@@ -506,8 +904,9 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-app">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/app-3.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/app-3.jpg') }}" class="img-fluid"
+                                <a href="{{ asset('assets/img/portfolio/app-3.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/app-3.jpg') }}" class="img-fluid"
                                         alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">App 3</a></h4>
@@ -518,8 +917,9 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-product">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/product-3.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/product-3.jpg') }}" class="img-fluid"
+                                <a href="{{ asset('assets/img/portfolio/product-3.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/product-3.jpg') }}" class="img-fluid"
                                         alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">Product 3</a></h4>
@@ -530,9 +930,10 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-branding">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/branding-3.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/branding-3.jpg') }}"
-                                        class="img-fluid" alt=""></a>
+                                <a href="{{ asset('assets/img/portfolio/branding-3.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/branding-3.jpg') }}" class="img-fluid"
+                                        alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">Branding 3</a></h4>
                                     <p>Lorem ipsum, dolor sit amet consectetur</p>
@@ -542,8 +943,9 @@
 
                         <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-books">
                             <div class="portfolio-content h-100">
-                                <a href="{{ asset('assets/img/portfolio/books-3.jpg') }}" data-gallery="portfolio-gallery-app"
-                                    class="glightbox"><img src="{{ asset('assets/img/portfolio/books-3.jpg') }}" class="img-fluid"
+                                <a href="{{ asset('assets/img/portfolio/books-3.jpg') }}"
+                                    data-gallery="portfolio-gallery-app" class="glightbox"><img
+                                        src="{{ asset('assets/img/portfolio/books-3.jpg') }}" class="img-fluid"
                                         alt=""></a>
                                 <div class="portfolio-info">
                                     <h4><a href="portfolio-details.html" title="More Details">Books 3</a></h4>
@@ -558,97 +960,79 @@
 
             </div>
 
-        </section><!-- /Portfolio Section -->
+        </section><!-- /Portfolio Section --> --}}
 
         <!-- Pricing Section -->
         <section id="pricing" class="pricing section">
 
-            <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
-                <h2>Pricing</h2>
-                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-            </div><!-- End Section Title -->
+                <h2><span style="color: #e3001c;">Harga</span> Layanan</h2>
+                <p>Informasi harga kami disampaikan secara terbuka dan jelas, tanpa biaya tersembunyi. Harga tidak
+                    termasuk biaya penggantian suku cadang.</p>
+            </div>
 
             <div class="container">
-
                 <div class="row gy-4">
 
+                    <!-- Pengecekan -->
                     <div class="col-lg-4" data-aos="zoom-in" data-aos-delay="100">
-                        <div class="pricing-item">
-                            <h3>Free Plan</h3>
-                            <p class="description">Ullam mollitia quasi nobis soluta in voluptatum et sint palora dex
-                                strater</p>
-                            <h4><sup>$</sup>0<span> / month</span></h4>
-                            <a href="#" class="cta-btn">Start a free trial</a>
-                            <p class="text-center small">No credit card required</p>
+                        <div class="pricing-item featured">
+                            <h3>Pengecekan</h3>
+                            <p class="description">Pemeriksaan menyeluruh untuk mendeteksi masalah tanpa dilakukan
+                                perbaikan.</p>
+                            <h4>Rp75.000</h4>
+                            <a href="#contact" class="cta-btn">Reservasi Sekarang</a>
+                            <p class="text-center small">Tidak termasuk service dan sparepart</p>
                             <ul>
-                                <li><i class="bi bi-check"></i> <span>Quam adipiscing vitae proin</span></li>
-                                <li><i class="bi bi-check"></i> <span>Nec feugiat nisl pretium</span></li>
-                                <li><i class="bi bi-check"></i> <span>Nulla at volutpat diam uteera</span></li>
-                                <li class="na"><i class="bi bi-x"></i> <span>Pharetra massa massa ultricies</span>
-                                </li>
-                                <li class="na"><i class="bi bi-x"></i> <span>Massa ultricies mi quis
-                                        hendrerit</span></li>
-                                <li class="na"><i class="bi bi-x"></i> <span>Voluptate id voluptas qui sed aperiam
-                                        rerum</span></li>
-                                <li class="na"><i class="bi bi-x"></i> <span>Iure nihil dolores recusandae odit
-                                        voluptatibus</span></li>
+                                <li><i class="bi bi-check"></i> Diagnosa kondisi alat</li>
+                                <li><i class="bi bi-check"></i> Laporan hasil pengecekan</li>
+                                <li class="na"><i class="bi bi-x"></i> Tidak termasuk penggantian sparepart</li>
+                                <li class="na"><i class="bi bi-x"></i> Tidak termasuk perbaikan</li>
                             </ul>
                         </div>
-                    </div><!-- End Pricing Item -->
+                    </div>
 
+                    <!-- Service Ringan -->
                     <div class="col-lg-4" data-aos="zoom-in" data-aos-delay="200">
                         <div class="pricing-item featured">
-                            <p class="popular">Popular</p>
-                            <h3>Business Plan</h3>
-                            <p class="description">Ullam mollitia quasi nobis soluta in voluptatum et sint palora dex
-                                strater</p>
-                            <h4><sup>$</sup>29<span> / month</span></h4>
-                            <a href="#" class="cta-btn">Start a free trial</a>
-                            <p class="text-center small">No credit card required</p>
+                            <h3>Service Ringan</h3>
+                            <p class="description">Perawatan ringan seperti pembersihan, pelumasan, dan perbaikan
+                                minor.</p>
+                            <h4>Rp100.000</h4>
+                            <a href="#contact" class="cta-btn">Reservasi Sekarang</a>
+                            <p class="text-center small">Tidak termasuk sparepart</p>
                             <ul>
-                                <li><i class="bi bi-check"></i> <span>Quam adipiscing vitae proin</span></li>
-                                <li><i class="bi bi-check"></i> <span>Nec feugiat nisl pretium</span></li>
-                                <li><i class="bi bi-check"></i> <span>Nulla at volutpat diam uteera</span></li>
-                                <li><i class="bi bi-check"></i> <span>Pharetra massa massa ultricies</span></li>
-                                <li><i class="bi bi-check"></i> <span>Massa ultricies mi quis hendrerit</span></li>
-                                <li><i class="bi bi-check"></i> <span>Voluptate id voluptas qui sed aperiam
-                                        rerum</span></li>
-                                <li class="na"><i class="bi bi-x"></i> <span>Iure nihil dolores recusandae odit
-                                        voluptatibus</span></li>
+                                <li><i class="bi bi-check"></i> Pengecekan & pembersihan</li>
+                                <li><i class="bi bi-check"></i> Pelumasan komponen</li>
+                                <li><i class="bi bi-check"></i> Perbaikan ringan</li>
+                                <li class="na"><i class="bi bi-x"></i> Tidak termasuk sparepart</li>
                             </ul>
                         </div>
-                    </div><!-- End Pricing Item -->
+                    </div>
 
+                    <!-- Service Besar -->
                     <div class="col-lg-4" data-aos="zoom-in" data-aos-delay="300">
-                        <div class="pricing-item">
-                            <h3>Developer Plan</h3>
-                            <p class="description">Ullam mollitia quasi nobis soluta in voluptatum et sint palora dex
-                                strater</p>
-                            <h4><sup>$</sup>49<span> / month</span></h4>
-                            <a href="#" class="cta-btn">Start a free trial</a>
-                            <p class="text-center small">No credit card required</p>
+                        <div class="pricing-item featured">
+                            <h3>Service Besar</h3>
+                            <p class="description">Penanganan menyeluruh untuk kerusakan sedang hingga berat.</p>
+                            <h4>Rp250.000</h4>
+                            <a href="#contact" class="cta-btn">Reservasi Sekarang</a>
+                            <p class="text-center small">Tidak termasuk sparepart</p>
                             <ul>
-                                <li><i class="bi bi-check"></i> <span>Quam adipiscing vitae proin</span></li>
-                                <li><i class="bi bi-check"></i> <span>Nec feugiat nisl pretium</span></li>
-                                <li><i class="bi bi-check"></i> <span>Nulla at volutpat diam uteera</span></li>
-                                <li><i class="bi bi-check"></i> <span>Pharetra massa massa ultricies</span></li>
-                                <li><i class="bi bi-check"></i> <span>Massa ultricies mi quis hendrerit</span></li>
-                                <li><i class="bi bi-check"></i> <span>Voluptate id voluptas qui sed aperiam
-                                        rerum</span></li>
-                                <li><i class="bi bi-check"></i> <span>Iure nihil dolores recusandae odit
-                                        voluptatibus</span></li>
+                                <li><i class="bi bi-check"></i> Pemeriksaan menyeluruh</li>
+                                <li><i class="bi bi-check"></i> Jasa Penggantian part</li>
+                                <li><i class="bi bi-check"></i> Perbaikan menyeluruh</li>
+                                <li class="na"><i class="bi bi-x"></i> Biaya sparepart ditagih terpisah</li>
                             </ul>
                         </div>
-                    </div><!-- End Pricing Item -->
+                    </div>
 
                 </div>
-
             </div>
 
         </section><!-- /Pricing Section -->
 
-        <!-- Faq Section -->
+        {{-- <!-- Faq Section -->
         <section id="faq" class="faq section light-background">
 
             <div class="container">
@@ -735,15 +1119,16 @@
 
             </div>
 
-        </section><!-- /Faq Section -->
+        </section><!-- /Faq Section --> --}}
 
         <!-- Contact Section -->
-        <section id="contact" class="contact section">
+        <section id="contact" class="contact section light-background">
 
             <!-- Section Title -->
             <div class="container section-title" data-aos="fade-up">
-                <h2>Contact</h2>
-                <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+                <h2><span style="color: #e3001c;">Kontak</span> Kami</h2>
+                <p>Silakan hubungi kami untuk informasi lebih lanjut, pertanyaan, atau kerja sama. Kami siap membantu
+                    Anda.</p>
             </div><!-- End Section Title -->
 
             <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -756,36 +1141,34 @@
                             <div class="col-md-6">
                                 <div class="info-item" data-aos="fade" data-aos-delay="200">
                                     <i class="bi bi-geo-alt"></i>
-                                    <h3>Address</h3>
-                                    <p>A108 Adam Street</p>
-                                    <p>New York, NY 535022</p>
+                                    <h3>Alamat</h3>
+                                    <p>Jl. Pembangunan I No.1 3, RT.3/RW.1</p>
+                                    <p>Kota Jakarta Pusat, DKI Jakarta 10130</p>
                                 </div>
                             </div><!-- End Info Item -->
 
                             <div class="col-md-6">
                                 <div class="info-item" data-aos="fade" data-aos-delay="300">
                                     <i class="bi bi-telephone"></i>
-                                    <h3>Call Us</h3>
-                                    <p>+1 5589 55488 55</p>
-                                    <p>+1 6678 254445 41</p>
+                                    <h3>Hubungi Kami</h3>
+                                    <p>(021) 6311133</p>
                                 </div>
                             </div><!-- End Info Item -->
 
                             <div class="col-md-6">
                                 <div class="info-item" data-aos="fade" data-aos-delay="400">
                                     <i class="bi bi-envelope"></i>
-                                    <h3>Email Us</h3>
-                                    <p>info@example.com</p>
-                                    <p>contact@example.com</p>
+                                    <h3>Email Kami</h3>
+                                    <p>info@ccas.co.id</p>
                                 </div>
                             </div><!-- End Info Item -->
 
                             <div class="col-md-6">
                                 <div class="info-item" data-aos="fade" data-aos-delay="500">
                                     <i class="bi bi-clock"></i>
-                                    <h3>Open Hours</h3>
-                                    <p>Monday - Friday</p>
-                                    <p>9:00AM - 05:00PM</p>
+                                    <h3>Jam Operasional</h3>
+                                    <p>Senin - Jumat</p>
+                                    <p>8:30AM - 05:30PM</p>
                                 </div>
                             </div><!-- End Info Item -->
 
@@ -793,41 +1176,15 @@
 
                     </div>
 
-                    <div class="col-lg-6">
-                        <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up"
-                            data-aos-delay="200">
-                            <div class="row gy-4">
-
-                                <div class="col-md-6">
-                                    <input type="text" name="name" class="form-control"
-                                        placeholder="Your Name" required="">
-                                </div>
-
-                                <div class="col-md-6 ">
-                                    <input type="email" class="form-control" name="email"
-                                        placeholder="Your Email" required="">
-                                </div>
-
-                                <div class="col-12">
-                                    <input type="text" class="form-control" name="subject" placeholder="Subject"
-                                        required="">
-                                </div>
-
-                                <div class="col-12">
-                                    <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
-                                </div>
-
-                                <div class="col-12 text-center">
-                                    <div class="loading">Loading</div>
-                                    <div class="error-message"></div>
-                                    <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                                    <button type="submit">Send Message</button>
-                                </div>
-
-                            </div>
-                        </form>
-                    </div><!-- End Contact Form -->
+                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
+                        <!-- Embedded Google Map -->
+                        <div class="map-responsive" style="border-radius: 10px; overflow: hidden;">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.771353889314!2d106.81829309999999!3d-6.161369199999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5b9263ef499%3A0x351fb0582becf193!2sPT.%20Milenia%20Mega%20Mandiri!5e0!3m2!1sid!2sid!4v1750142744280!5m2!1sid!2sid"
+                                width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div><!-- End Google Map -->
 
                 </div>
 
@@ -839,7 +1196,7 @@
 
     <footer id="footer" class="footer dark-background">
 
-        <div class="footer-newsletter">
+        {{-- <div class="footer-newsletter">
             <div class="container">
                 <div class="row justify-content-center text-center">
                     <div class="col-lg-6">
@@ -855,50 +1212,67 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <div class="container footer-top">
             <div class="row gy-4">
                 <div class="col-lg-4 col-md-6 footer-about">
-                    <a href="index.html" class="d-flex align-items-center">
-                        <span class="sitename">eBusiness</span>
+                    <a href="#">
+                        <img src="{{ asset('assets/img/logo.png') }}" width="200" class="bg-white"
+                            alt="">
                     </a>
                     <div class="footer-contact pt-3">
-                        <p>A108 Adam Street</p>
-                        <p>New York, NY 535022</p>
-                        <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-                        <p><strong>Email:</strong> <span>info@example.com</span></p>
+                        <p>Jl. Pembangunan I No.1 3, RT.3/RW.1</p>
+                        <p>Kota Jakarta Pusat, DKI Jakarta 10130</p>
+                        <p class="mt-3"><strong>Telepon:</strong> <span>(021) 6311133</span></p>
+                        <p><strong>Email:</strong> <span>info@ccas.co.id</span></p>
                     </div>
                 </div>
 
                 <div class="col-lg-2 col-md-3 footer-links">
-                    <h4>Useful Links</h4>
+                    <h4>Navigasi</h4>
                     <ul>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Home</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">About us</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Services</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Terms of service</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#home">Beranda</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#about">Tentang Kami</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#services">Layanan</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#why-us">Kenapa Kami</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#testimonial">Testimoni</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#pricing">Harga</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#contact">Kontak</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-2 col-md-3 footer-links">
-                    <h4>Our Services</h4>
+                    <h4>Layanan Kami</h4>
                     <ul>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Web Design</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Web Development</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Product Management</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Marketing</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Servis Produk NOCO</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Servis Produk CTEK</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Servis Produk RUPES</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Konsultasi & Diagnosa</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="#">Penjualan Aksesori</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-4 col-md-12">
-                    <h4>Follow Us</h4>
-                    <p>Cras fermentum odio eu feugiat lide par naso tierra videa magna derita valies</p>
-                    <div class="social-links d-flex">
-                        <a href=""><i class="bi bi-twitter-x"></i></a>
+                    <h4>Ikuti Kami</h4>
+                    <p>Dapatkan informasi terbaru seputar layanan, promo, dan produk unggulan NOCO, CTEK, dan RUPES dari
+                        kami melalui media sosial.</p>
+                    <div class="social-links d-flex flex-column align-items-start gap-2">
+                        {{-- <a href=""><i class="bi bi-twitter-x"></i></a>
                         <a href=""><i class="bi bi-facebook"></i></a>
-                        <a href=""><i class="bi bi-instagram"></i></a>
-                        <a href=""><i class="bi bi-linkedin"></i></a>
+                        <a href=""><i class="bi bi-linkedin"></i></a> --}}
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="https://instagram.com/rupesindonesia" target="_blank" title="RUPES Indonesia">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <span>@rupesindonesia</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="https://instagram.com/mileniagroup" target="_blank" title="Milenia Group">
+                                <i class="bi bi-instagram"></i>
+                            </a>
+                            <span>@mileniagroup</span>
+                        </div>
                     </div>
                 </div>
 
@@ -906,14 +1280,11 @@
         </div>
 
         <div class="container copyright text-center mt-4">
-            <p>© <span>Copyright</span> <strong class="px-1 sitename">eBusiness</strong> <span>All Rights
+            <p>© <span>Copyright</span> <strong class="px-1 sitename">Milenia Group</strong> <span>All Rights
                     Reserved</span></p>
             <div class="credits">
-                <!-- All the links in the footer should remain intact. -->
-                <!-- You can delete the links only if you've purchased the pro version. -->
-                <!-- Licensing information: https://bootstrapmade.com/license/ -->
-                <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+                Developed by <a href="https://anandasatriaa.github.io/" target="_blank" id="developer-link">IT
+                    Milenia Group</a>
             </div>
         </div>
 
@@ -937,6 +1308,83 @@
 
     <!-- Main JS File -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
+
+    <!-- Include Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    {{-- Carousel Testimoni --}}
+    <script>
+        // Initialize Swiper
+        var swiper = new Swiper('.swiper-container', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            loop: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination2',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next2',
+                prevEl: '.swiper-button-prev2',
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 1,
+                },
+                768: {
+                    slidesPerView: 2,
+                },
+                1024: {
+                    slidesPerView: 3,
+                },
+            }
+        });
+    </script>
+
+    {{-- Ananda Satria Ariyanto --}}
+    <script>
+        const devLink = document.getElementById('developer-link');
+
+        devLink.addEventListener('mouseover', () => {
+            devLink.textContent = 'Ananda Satria Ariyanto';
+        });
+
+        devLink.addEventListener('mouseout', () => {
+            devLink.textContent = 'IT Milenia Group';
+        });
+    </script>
+
+    {{-- Navbar Menu Active --}}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const sections = document.querySelectorAll("section[id]");
+            const navLinks = document.querySelectorAll("#navmenu a");
+
+            function onScroll() {
+                let scrollPos = window.scrollY + 100; // buffer tinggi header
+
+                sections.forEach((section) => {
+                    if (
+                        scrollPos >= section.offsetTop &&
+                        scrollPos < section.offsetTop + section.offsetHeight
+                    ) {
+                        navLinks.forEach((link) => {
+                            link.classList.remove("active");
+                            if (link.getAttribute("href") === "#" + section.id) {
+                                link.classList.add("active");
+                            }
+                        });
+                    }
+                });
+            }
+
+            window.addEventListener("scroll", onScroll);
+        });
+    </script>
 
 </body>
 

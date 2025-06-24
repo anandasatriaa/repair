@@ -251,25 +251,6 @@
                     <li><a href="#why-us">Kenapa Kami</a></li>
                     <li><a href="#testimonials">Testimoni</a></li>
                     <li><a href="#pricing">Harga</a></li>
-                    {{-- <li class="dropdown"><a href="#"><span>Dropdown</span> <i
-                                class="bi bi-chevron-down toggle-dropdown"></i></a>
-                        <ul>
-                            <li><a href="#">Dropdown 1</a></li>
-                            <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i
-                                        class="bi bi-chevron-down toggle-dropdown"></i></a>
-                                <ul>
-                                    <li><a href="#">Deep Dropdown 1</a></li>
-                                    <li><a href="#">Deep Dropdown 2</a></li>
-                                    <li><a href="#">Deep Dropdown 3</a></li>
-                                    <li><a href="#">Deep Dropdown 4</a></li>
-                                    <li><a href="#">Deep Dropdown 5</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="#">Dropdown 2</a></li>
-                            <li><a href="#">Dropdown 3</a></li>
-                            <li><a href="#">Dropdown 4</a></li>
-                        </ul>
-                    </li> --}}
                     <li><a href="#contact">Kontak</a></li>
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -310,7 +291,7 @@
                         <h2>Layanan Handal & Terpercaya</h2>
                         <p>Milenia Group menghadirkan layanan resmi dengan jaminan mutu untuk setiap produk yang kami
                             tangani. Reservasi online kini lebih mudah dan cepat.</p>
-                        <a href="#" class="btn-get-started">Reservasi Sekarang</a>
+                        <a href="{{ route('form-service') }}" class="btn-get-started">Reservasi Sekarang</a>
                     </div>
                 </div><!-- End Carousel Item -->
 
@@ -514,7 +495,7 @@
                                 menghasilkan kilap yang sempurna dan dapat juga digunakan untuk memperbaiki clear coat
                                 yang tidak sempurna.
                             </p>
-                            <a href="#reservation-form" class="btn"
+                            <a href="{{ route('form-service') }}" class="btn"
                                 style="background-color: #e3001c; color: white;">
                                 Reservasi Perbaikan <i class="bi bi-arrow-up-right ms-1"></i>
                             </a>
@@ -534,7 +515,7 @@
                                 merawat baterai kendaraan serta dapat menyesuaikan proses pengisian daya berdasarkan
                                 kebutuhan baterai.
                             </p>
-                            <a href="#reservation-form" class="btn"
+                            <a href="{{ route('form-service') }}" class="btn"
                                 style="background-color: #e3001c; color: white;">
                                 Reservasi Perbaikan <i class="bi bi-arrow-up-right ms-1"></i>
                             </a>
@@ -563,7 +544,7 @@
                                 kembali aki yang mati dan memiliki teknologi antipercikan dan perlindungan
                                 polaritas terbalik.
                             </p>
-                            <a href="#reservation-form" class="btn"
+                            <a href="{{ route('form-service') }}" class="btn"
                                 style="background-color: #e3001c; color: white;">
                                 Reservasi Perbaikan <i class="bi bi-arrow-up-right ms-1"></i>
                             </a>
@@ -981,7 +962,7 @@
                             <p class="description">Pemeriksaan menyeluruh untuk mendeteksi masalah tanpa dilakukan
                                 perbaikan.</p>
                             <h4>Rp75.000</h4>
-                            <a href="#contact" class="cta-btn">Reservasi Sekarang</a>
+                            <a href="{{ route('form-service') }}" class="cta-btn">Reservasi Sekarang</a>
                             <p class="text-center small">Tidak termasuk service dan sparepart</p>
                             <ul>
                                 <li><i class="bi bi-check"></i> Diagnosa kondisi alat</li>
@@ -999,7 +980,7 @@
                             <p class="description">Perawatan ringan seperti pembersihan, pelumasan, dan perbaikan
                                 minor.</p>
                             <h4>Rp100.000</h4>
-                            <a href="#contact" class="cta-btn">Reservasi Sekarang</a>
+                            <a href="{{ route('form-service') }}" class="cta-btn">Reservasi Sekarang</a>
                             <p class="text-center small">Tidak termasuk sparepart</p>
                             <ul>
                                 <li><i class="bi bi-check"></i> Pengecekan & pembersihan</li>
@@ -1016,7 +997,7 @@
                             <h3>Service Besar</h3>
                             <p class="description">Penanganan menyeluruh untuk kerusakan sedang hingga berat.</p>
                             <h4>Rp250.000</h4>
-                            <a href="#contact" class="cta-btn">Reservasi Sekarang</a>
+                            <a href="{{ route('form-service') }}" class="cta-btn">Reservasi Sekarang</a>
                             <p class="text-center small">Tidak termasuk sparepart</p>
                             <ul>
                                 <li><i class="bi bi-check"></i> Pemeriksaan menyeluruh</li>

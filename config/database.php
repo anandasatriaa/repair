@@ -112,6 +112,30 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'firebird' => [
+            'driver'   => 'firebird',
+            'host'     => env('FIREBIRD_HOST', '192.168.0.8'),
+            'port'     => env('FIREBIRD_PORT', '3050'),
+            'database' => env('FIREBIRD_DATABASE', 'G:/AFProSys/Data/Garansi.AFS'),
+            'username' => env('FIREBIRD_USERNAME', 'AFPROSYS'),
+            'password' => env('FIREBIRD_PASSWORD', 'Jombang'),
+            'charset'  => 'UTF8',
+            'collation' => 'UTF8_UNICODE_CI',
+            'engine_version' => '3.0',
+            'role'     => null,
+            'legacy_limit_and_offset' => false,
+        ],
+
+        'sqlsrv-snx' => [
+            'driver'   => 'sqlsrv',
+            'host'     => env('DB_SQLSRV_HOST', '192.168.0.3'),
+            'port'     => env('DB_SQLSRV_PORT', '1433'),
+            'database' => env('DB_SQLSRV_DATABASE', 'VDB-SNX'),
+            'username' => env('DB_SQLSRV_USERNAME', 'APITarikDataWarehouse'),
+            'password' => env('DB_SQLSRV_PASSWORD', 'ccas2011**'),
+            'charset'  => 'utf8',
+        ],
+
     ],
 
     /*

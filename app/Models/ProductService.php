@@ -24,6 +24,10 @@ class ProductService extends Model
         'actual_problem',
     ];
 
+    protected $casts = [
+        'date' => 'datetime',
+    ];
+
     // Jika kamu menggunakan timestamps (created_at/updated_at), pastikan properti berikut:
     public $timestamps = true;
 }

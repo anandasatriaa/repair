@@ -22,9 +22,10 @@ Route::get('/admin', [AuthController::class, 'showLoginForm'])->name('admin.logi
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.submit');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
-Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-Route::get('/admin/service/{category}', [AdminServiceController::class, 'byCategory'])->name('admin.service.category');
-Route::post('/admin/service/update-field', [AdminServiceController::class, 'updateField'])->name('admin.service.updateField');
-Route::get('/admin/service/{category}/export', [AdminServiceController::class, 'export'])->name('admin.service.export');
-
+Route::middleware('auth')->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/service/{category}', [AdminServiceController::class, 'byCategory'])->name('admin.service.category');
+    Route::post('/service/update-field', [AdminServiceController::class, 'updateField'])->name('admin.service.updateField');
+    Route::get('/service/{category}/export', [AdminServiceController::class, 'export'])->name('admin.service.export');
+});
 

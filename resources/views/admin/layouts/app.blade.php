@@ -136,7 +136,8 @@
                                         default => 'bg-secondary',
                                     };
                                 @endphp
-                                <a href="{{ route('admin.service.category', strtolower($notif->category)) }}" class="dropdown-item">
+                                <a href="{{ route('admin.service.category', strtolower($notif->category)) }}"
+                                    class="dropdown-item">
                                     <h6 class="fw-normal mb-0">
                                         Permintaan service oleh: {{ $notif->name_customer }} (s/n:
                                         {{ $notif->serial_number }})
@@ -159,7 +160,10 @@
                             <span class="d-none d-lg-inline-flex">{{ $user->name ?? 'Guest' }}</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">Log Out</a>
+                            <form method="POST" action="{{ route('admin.logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Log Out</button>
+                            </form>
                         </div>
                     </div>
                 </div>

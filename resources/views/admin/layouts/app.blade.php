@@ -138,7 +138,7 @@
                                 @endphp
                                 <a href="{{ route('admin.service.category', strtolower($notif->category)) }}" class="dropdown-item">
                                     <h6 class="fw-normal mb-0">
-                                        Service masuk dari {{ $notif->name_customer }} (s/n:
+                                        Permintaan service oleh: {{ $notif->name_customer }} (s/n:
                                         {{ $notif->serial_number }})
                                     </h6>
                                     <p class="mb-0"><span
@@ -213,6 +213,9 @@
 
     <!-- Include SweetAlert2 library -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Chart.js Data Labels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
     {{-- Ananda Satria Ariyanto --}}
     <script>

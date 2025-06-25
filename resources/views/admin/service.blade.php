@@ -259,92 +259,102 @@
         }
     </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1) Daftarkan custom search function (filter by Tipe Service)
-        $.fn.dataTable.ext.search.push((settings, data, dataIndex) => {
-            if (settings.nTable.id !== 'serviceTable') return true;
-            const selectedType = $('#filterTypeService').val();
-            if (!selectedType) return true;
-            const cellNode = settings.aoData[dataIndex].anCells[7];
-            const currentType = $('select.type-service-dropdown', cellNode).val();
-            return currentType === selectedType;
-        });
-    
-        // 2) Inisialisasi DataTable sekali, simpan instance
-        const table = $('#serviceTable').DataTable({
-            order: [[1, 'desc']]
-        });
-    
-        // 3) Filter & Export link update
-        const exportBtn = document.getElementById('btnExportExcel');
-        $('#filterTypeService').on('change', function() {
-            table.draw();
-            const type = this.value;
-            const base = "{{ route('admin.service.export', strtolower($category)) }}";
-            exportBtn.href = type ? `${base}?type_service=${type}` : base;
-        });
-    
-        // 4) Styling awal dropdown
-        updateDropdownStyle();
-    
-        // 5) Delegasi untuk dropdown type/service
-        $('#serviceTable tbody')
-          .on('change', '.type-service-dropdown', function() {
-              sendUpdate(this);
-          })
-          .on('change', '.status-dropdown', function() {
-              sendUpdate(this);
-          });
-    
-        // 6) Delegasi untuk tombol edit/save pada actual_problem
-        $('#serviceTable tbody').on('click', '.btn-toggle-edit', function() {
-            const btn  = this;
-            const row  = btn.closest('tr');
-            const span = row.querySelector('.actual-problem-text');
-            const input = row.querySelector('.actual-problem-input');
-            const icon  = btn.querySelector('i');
-            const id    = btn.getAttribute('data-id');
-    
-            if (icon.classList.contains('fa-save')) {
-                // Simpan via AJAX
-                const value = input.value;
-                fetch("{{ route('admin.service.updateField') }}", {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id, field: 'actual_problem', value }),
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        span.textContent = value || '-';
-                        Swal.fire({
-                            toast: true, position: 'top-end', icon: 'success',
-                            title: 'Berhasil disimpan', showConfirmButton: false, timer: 1500
-                        });
-                    }
-                });
-                input.classList.add('d-none');
-                span.classList.remove('d-none');
-                icon.classList.replace('fa-save', 'fa-edit');
-            } else {
-                // Masuk mode edit
-                input.classList.remove('d-none');
-                span.classList.add('d-none');
-                input.focus();
-                icon.classList.replace('fa-edit', 'fa-save');
-            }
-        });
-    
-        // 7) Apply ulang styling setiap kali DataTable redraw (paginate, search, sort)
-        table.on('draw', function() {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 1) Daftarkan custom search function (filter by Tipe Service)
+            $.fn.dataTable.ext.search.push((settings, data, dataIndex) => {
+                if (settings.nTable.id !== 'serviceTable') return true;
+                const selectedType = $('#filterTypeService').val();
+                if (!selectedType) return true;
+                const cellNode = settings.aoData[dataIndex].anCells[7];
+                const currentType = $('select.type-service-dropdown', cellNode).val();
+                return currentType === selectedType;
+            });
+
+            // 2) Inisialisasi DataTable sekali, simpan instance
+            const table = $('#serviceTable').DataTable({
+                order: [
+                    [1, 'desc']
+                ]
+            });
+
+            // 3) Filter & Export link update
+            const exportBtn = document.getElementById('btnExportExcel');
+            $('#filterTypeService').on('change', function() {
+                table.draw();
+                const type = this.value;
+                const base = "{{ route('admin.service.export', strtolower($category)) }}";
+                exportBtn.href = type ? `${base}?type_service=${type}` : base;
+            });
+
+            // 4) Styling awal dropdown
             updateDropdownStyle();
+
+            // 5) Delegasi untuk dropdown type/service
+            $('#serviceTable tbody')
+                .on('change', '.type-service-dropdown', function() {
+                    sendUpdate(this);
+                })
+                .on('change', '.status-dropdown', function() {
+                    sendUpdate(this);
+                });
+
+            // 6) Delegasi untuk tombol edit/save pada actual_problem
+            $('#serviceTable tbody').on('click', '.btn-toggle-edit', function() {
+                const btn = this;
+                const row = btn.closest('tr');
+                const span = row.querySelector('.actual-problem-text');
+                const input = row.querySelector('.actual-problem-input');
+                const icon = btn.querySelector('i');
+                const id = btn.getAttribute('data-id');
+
+                if (icon.classList.contains('fa-save')) {
+                    // Simpan via AJAX
+                    const value = input.value;
+                    fetch("{{ route('admin.service.updateField') }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                id,
+                                field: 'actual_problem',
+                                value
+                            }),
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                span.textContent = value || '-';
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Berhasil disimpan',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            }
+                        });
+                    input.classList.add('d-none');
+                    span.classList.remove('d-none');
+                    icon.classList.replace('fa-save', 'fa-edit');
+                } else {
+                    // Masuk mode edit
+                    input.classList.remove('d-none');
+                    span.classList.add('d-none');
+                    input.focus();
+                    icon.classList.replace('fa-edit', 'fa-save');
+                }
+            });
+
+            // 7) Apply ulang styling setiap kali DataTable redraw (paginate, search, sort)
+            table.on('draw', function() {
+                updateDropdownStyle();
+            });
         });
-    });
     </script>
-    
+
 
 @endsection

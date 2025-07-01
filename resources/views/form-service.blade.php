@@ -398,24 +398,24 @@
                                     </div>
                                     <!-- Serial Number / Manual Input -->
                                     <div class="mb-3" id="serialSelectGroup">
-                                        <label for="serialNumber" class="form-label required">Serial Number</label>
-                                        <select class="form-control" id="serialNumber" name="serial_number" required
+                                        <label for="serialNumber" class="form-label">Serial Number (Opsional)</label>
+                                        <select class="form-control" id="serialNumber" name="serial_number"
                                             style="width: 100%;">
                                             <option value="">Pilih Serial Number</option>
                                         </select>
                                     </div>
                                     <div class="mb-3 d-none" id="serialManualGroup">
-                                        <label for="serialManual" class="form-label required">Serial Number
-                                            (Manual)</label>
+                                        <label for="serialManual" class="form-label">Serial Number
+                                            (Opsional)</label>
                                         <input type="text" class="form-control" id="serialManual"
-                                            name="serial_manual" required placeholder="Masukkan serial number manual">
+                                            name="serial_manual" placeholder="Masukkan serial number manual">
                                     </div>
 
                                     <!-- Product Type -->
                                     <div class="mb-3" id="productTypeGroup">
                                         <label for="productType" class="form-label required">Tipe Produk</label>
                                         <input type="text" class="form-control" id="productType"
-                                            name="product_type" readonly required
+                                            name="product_type" required
                                             placeholder="Contoh: LH 19 E/ STB ROTARY POLISHER">
                                     </div>
 
@@ -658,35 +658,23 @@
 
             // Toggle visibility and required attributes
             function toggleMode() {
-                const isRupes = $('#brand').val() === 'rupes';
+                const brand = $('#brand').val();
 
-                // Serial Number
-                if (isRupes) {
+                // Serial Number vs Manual
+                if (brand === 'rupes') {
                     $('#serialSelectGroup').addClass('d-none')
-                        .find('select')
-                        .prop('required', false)
-                        .prop('disabled', true); // <<< disable!
+                        .find('select').prop('required', false).prop('disabled', false);
                     $('#serialManualGroup').removeClass('d-none')
-                        .find('input')
-                        .prop('required', true)
-                        .prop('disabled', false); // <<< enable!
+                        .find('input').prop('required', false).prop('disabled', false);
                 } else {
                     $('#serialSelectGroup').removeClass('d-none')
-                        .find('select')
-                        .prop('required', true)
-                        .prop('disabled', false); // <<< enable!
+                        .find('select').prop('required', false).prop('disabled', false);
                     $('#serialManualGroup').addClass('d-none')
-                        .find('input')
-                        .prop('required', false)
-                        .prop('disabled', true); // <<< disable!
+                        .find('input').prop('required', false).prop('disabled', false);
                 }
 
-                // Product Type (sama seperti di atas)
-                if (isRupes) {
-                    $('#productType').prop('readonly', false).prop('required', true).val('');
-                } else {
-                    $('#productType').prop('readonly', true).prop('required', false).val('');
-                }
+                // Product Type: selalu editable
+                $('#productType').prop('readonly', false).prop('required', true);
             }
             // On brand change
             $('#brand').change(() => {
@@ -705,7 +693,7 @@
                 $.get(productDescriptionUrl, {
                     serial
                 }, data => {
-                    $('#productType').prop('readonly', true).val(data.description || '');
+                    $('#productType').val(data.description || '');
                 });
             });
 

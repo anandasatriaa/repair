@@ -75,8 +75,8 @@ class ServiceController extends Controller
     {
         $validated = $request->validate([
             'brand'             => 'required|in:rupes,ctek,noco',
-            'serial_number'   => 'required_if:brand,ctek,noco|string',
-            'serial_manual'   => 'required_if:brand,rupes|string',
+            'serial_number'     => 'nullable|string',
+            'serial_manual'     => 'nullable|string',
             'product_type'      => 'required|string',
             'issue_description' => 'required|string',
             'customer_name'     => 'required|string',
@@ -110,6 +110,7 @@ class ServiceController extends Controller
                 'category'           => strtoupper($validated['brand']),
                 'date'               => now(),
                 'type_service'       => null,
+                'price'              => null,
                 'status'             => 'ON PROGRESS',
                 'actual_problem'     => null,
             ]);

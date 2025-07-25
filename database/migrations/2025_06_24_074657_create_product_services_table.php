@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('product_services', function (Blueprint $table) {
             $table->id();
-            $table->string('serial_number')->nullable();
             $table->string('type_product');
             $table->text('problem');
             $table->string('name_customer');

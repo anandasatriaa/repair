@@ -9,6 +9,7 @@
             <th>HP</th>
             <th>Tipe Produk</th>
             <th>Tipe Service</th>
+            <th>Harga</th>
             <th>Masalah</th>
             <th>Status</th>
             <th>Masalah Aktual</th>
@@ -20,12 +21,13 @@
             <tr>
                 <td>{{ $i + 1 }}</td>
                 <td>{{ \Carbon\Carbon::parse($s->date)->format('d-m-Y') }}</td>
-                <td>{{ $s->serial_number }}</td>
+                <td>{{ $s->serials->pluck('serial_number')->join(', ') }}</td>
                 <td>{{ $s->name_customer }}</td>
                 <td>{{ $s->email_customer }}</td>
                 <td>{{ $s->handphone_customer }}</td>
                 <td>{{ $s->type_product }}</td>
                 <td>{{ $s->type_service }}</td>
+                <td>{{ $s->price }}</td>
                 <td>{{ $s->problem }}</td>
                 <td>{{ $s->status }}</td>
                 <td>{{ $s->actual_problem }}</td>

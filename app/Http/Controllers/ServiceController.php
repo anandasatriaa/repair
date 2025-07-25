@@ -100,7 +100,6 @@ class ServiceController extends Controller
 
             // 4) Simpan ke DB
             $service = ProductService::create([
-                'serial_number'      => $serial,
                 'type_product'       => $validated['product_type'],
                 'problem'            => $validated['issue_description'],
                 'name_customer'      => $validated['customer_name'],
@@ -114,6 +113,12 @@ class ServiceController extends Controller
                 'status'             => 'ON PROGRESS',
                 'actual_problem'     => null,
             ]);
+
+            if ($serial) {
+                $service->serials()->create([
+                    'serial_number' => $serial
+                ]);
+            }
 
             // 5) Response sesuai type request
             if ($request->expectsJson()) {

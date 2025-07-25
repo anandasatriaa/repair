@@ -27,5 +27,8 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/service/{category}', [AdminServiceController::class, 'byCategory'])->name('admin.service.category');
     Route::post('/service/update-field', [AdminServiceController::class, 'updateField'])->name('admin.service.updateField');
     Route::get('/service/{category}/export', [AdminServiceController::class, 'export'])->name('admin.service.export');
+    Route::post('/service/add-serial',   [AdminServiceController::class, 'addSerial'])->name('admin.service.addSerial');
+    Route::post('/service/update-serial', [AdminServiceController::class, 'updateSerial'])->name('admin.service.updateSerial');
+    Route::delete('/service/delete-serial/{id}', [AdminServiceController::class, 'deleteSerial'])->name('admin.service.deleteSerial');
 });
 

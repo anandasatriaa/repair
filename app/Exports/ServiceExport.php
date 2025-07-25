@@ -22,7 +22,8 @@ class ServiceExport implements FromView, ShouldAutoSize, WithEvents
 
     public function view(): View
     {
-        $query = ProductService::where('category', $this->category);
+        $query = ProductService::where('category', $this->category)
+            ->with('serials');
 
         if ($this->typeFilter) {
             $query->where('type_service', $this->typeFilter);
@@ -44,7 +45,7 @@ class ServiceExport implements FromView, ShouldAutoSize, WithEvents
                 $sheet     = $event->sheet->getDelegate();
                 $highestRow = $sheet->getHighestRow();
                 
-                $sheet->getStyle("L2:L{$highestRow}")
+                $sheet->getStyle("M2:M{$highestRow}")
                     ->applyFromArray([
                         'font' => [
                             'color'      => ['rgb' => '0000FF'],

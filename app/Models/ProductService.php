@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ProductServiceSerial;
 
 class ProductService extends Model
 {
@@ -10,7 +11,6 @@ class ProductService extends Model
 
     // Daftar kolom yang boleh di-mass-assignment
     protected $fillable = [
-        'serial_number',
         'type_product',
         'problem',
         'name_customer',
@@ -30,4 +30,9 @@ class ProductService extends Model
 
     // Jika kamu menggunakan timestamps (created_at/updated_at), pastikan properti berikut:
     public $timestamps = true;
+
+    public function serials()
+    {
+        return $this->hasMany(ProductServiceSerial::class);
+    }
 }

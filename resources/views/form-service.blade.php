@@ -728,11 +728,20 @@
             $('#serviceRequestForm').submit(function(e) {
                 e.preventDefault();
                 const form = this;
+                const submitButton = $(this).find('button[type="submit"]');
+
                 if (!form.checkValidity()) {
                     form.reportValidity();
                     return;
                 }
+
+                submitButton.prop('disabled', true);
+                submitButton.html(
+                    `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Mengirim...`
+                );
+
                 const data = new FormData(form);
+
                 $.ajax({
                     url: storeUrl,
                     method: 'POST',
@@ -757,6 +766,12 @@
                             msg = xhr.responseJSON.message;
                         }
                         Swal.fire('Gagal', msg, 'error');
+                    },
+                    complete: () => {
+                        submitButton.prop('disabled', false);
+                        submitButton.html(
+                            `<i class="bi bi-send me-2"></i>Kirim Permintaan Service`
+                        );
                     }
                 });
             });

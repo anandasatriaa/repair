@@ -459,9 +459,10 @@
                                                 <i class="bi bi-upload me-2"></i>Unggah File
                                             </label>
                                             <input type="file" class="form-upload-input" id="purchaseProofInput"
-                                                name="purchase_proof" accept="image/*,.pdf">
+                                                name="purchase_proof" accept="image/*,.pdf" max-file-size="10MB">
                                             <div id="fileName" class="form-text">Belum ada file dipilih</div>
                                         </div>
+                                        <div class="form-text">Maks. ukuran file: 10 MB.</div>
                                         <div id="filePreview" class="file-preview mt-2"></div>
                                     </div>
                                 </div>

@@ -82,7 +82,7 @@ class ServiceController extends Controller
             'customer_name'     => 'required|string',
             'customer_email'    => 'required|email',
             'customer_phone'    => 'required|string',
-            'purchase_proof'    => 'nullable|file|mimes:jpeg,jpg,png,gif,svg,webp,pdf|max:5120',
+            'purchase_proof'    => 'nullable|file|mimes:jpeg,jpg,png,gif,svg,webp,pdf|max:10240',
         ]);
 
         try {

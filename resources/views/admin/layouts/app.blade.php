@@ -72,13 +72,22 @@
                 <div class="navbar-nav w-100">
                     <a href="{{ route('admin.dashboard') }}"
                         class="nav-item nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i
-                            class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                            class="fa fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+
+                    <a href="{{ route('admin.spare-parts.index') }}"
+                        class="nav-item nav-link {{ request()->routeIs('admin.spare-parts.*') ? 'active' : '' }}">
+                        <i class="fa fa-list-alt me-2"></i>Master Spareparts
+                    </a>
+
                     @php
                         $isServiceActive = request()->routeIs('admin.service.category');
                     @endphp
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle {{ $isServiceActive ? 'active show' : '' }}"
-                            data-bs-toggle="dropdown"><i class="fa fa-tools me-2"></i>Services</a>
+                            data-bs-toggle="dropdown"><i class="fa fa-tools me-2"></i>Services
+                        </a>
+
                         <div class="dropdown-menu bg-transparent border-0 {{ $isServiceActive ? 'show' : '' }}">
                             @foreach ($serviceCategories as $cat)
                                 @php

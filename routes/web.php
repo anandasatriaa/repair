@@ -5,6 +5,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminServiceController;
+use App\Http\Controllers\Admin\AdminSparePartController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,13 +23,17 @@ Route::get('/admin', [AuthController::class, 'showLoginForm'])->name('admin.logi
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.submit');
 Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
-Route::middleware('auth')->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/service/{category}', [AdminServiceController::class, 'byCategory'])->name('admin.service.category');
-    Route::post('/service/update-field', [AdminServiceController::class, 'updateField'])->name('admin.service.updateField');
-    Route::get('/service/{category}/export', [AdminServiceController::class, 'export'])->name('admin.service.export');
-    Route::post('/service/add-serial',   [AdminServiceController::class, 'addSerial'])->name('admin.service.addSerial');
-    Route::post('/service/update-serial', [AdminServiceController::class, 'updateSerial'])->name('admin.service.updateSerial');
-    Route::delete('/service/delete-serial/{id}', [AdminServiceController::class, 'deleteSerial'])->name('admin.service.deleteSerial');
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/service/{category}', [AdminServiceController::class, 'byCategory'])->name('service.category');
+    Route::post('/service/update-field', [AdminServiceController::class, 'updateField'])->name('service.updateField');
+    Route::get('/service/{category}/export', [AdminServiceController::class, 'export'])->name('service.export');
+    Route::post('/service/add-serial',   [AdminServiceController::class, 'addSerial'])->name('service.addSerial');
+    Route::post('/service/update-serial', [AdminServiceController::class, 'updateSerial'])->name('service.updateSerial');
+    Route::delete('/service/delete-serial/{id}', [AdminServiceController::class, 'deleteSerial'])->name('service.deleteSerial');
+
+    Route::resource('spare-parts', AdminSparePartController::class);
+    Route::post('/spare-parts/{spare_part}/prices', [AdminSparePartController::class, 'storePrice'])->name('spare-parts.prices.store');
+    Route::post('/spare-parts/{id}/restore', [AdminSparePartController::class, 'restore'])->name('spare-parts.restore');
 });
 

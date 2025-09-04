@@ -25,6 +25,8 @@ return new class extends Migration
             $table->integer('price')->unsigned()->nullable();
             $table->enum('status', ['ON PROGRESS', 'DONE'])->default('ON PROGRESS');
             $table->text('actual_problem')->nullable();
+            $table->date('estimated_start_date')->nullable();
+            $table->date('estimated_end_date')->nullable();
             $table->timestamps();
         });
     }

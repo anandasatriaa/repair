@@ -31,9 +31,12 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/service/add-serial',   [AdminServiceController::class, 'addSerial'])->name('service.addSerial');
     Route::post('/service/update-serial', [AdminServiceController::class, 'updateSerial'])->name('service.updateSerial');
     Route::delete('/service/delete-serial/{id}', [AdminServiceController::class, 'deleteSerial'])->name('service.deleteSerial');
+    Route::post('/service/{service}/add-sparepart', [AdminServiceController::class, 'addUsedSparePart'])->name('service.addSparepart');
+    Route::delete('/service/{service}/remove-sparepart/{sparePart}', [AdminServiceController::class, 'removeUsedSparePart'])->name('service.removeSparepart');
 
     Route::resource('spare-parts', AdminSparePartController::class);
     Route::post('/spare-parts/{spare_part}/prices', [AdminSparePartController::class, 'storePrice'])->name('spare-parts.prices.store');
     Route::post('/spare-parts/{id}/restore', [AdminSparePartController::class, 'restore'])->name('spare-parts.restore');
+    Route::get('/api/sparepart-codes', [AdminServiceController::class, 'getSparePartCodes'])->name('sparepart-codes');
 });
 

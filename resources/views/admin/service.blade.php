@@ -31,6 +31,12 @@
             background-color: #d63384 !important;
             color: #fff !important;
         }
+
+        .form-control:disabled,
+        .form-control[readonly] {
+            background-color: #ffffff !important;
+            opacity: 1;
+        }
     </style>
 
 @endsection
@@ -88,10 +94,11 @@
                                 <th>Tipe Service</th>
                                 <th>Harga</th>
                                 <th>Permasalahan Mesin</th>
+                                <th>Penggunaan Sparepart</th>
+                                <th>Estimasi Pengerjaan</th>
                                 <th>Nota</th>
                                 <th>Status</th>
                                 <th>Permasalahan Aktual</th>
-                                <th>Edit</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -160,6 +167,37 @@
                                         </select>
                                     </td>
                                     <td>{{ $s->problem }}</td>
+                                    <td class="sparepart-cell" data-id="{{ $s->id }}">
+                                        <div class="spareparts-wrapper">
+                                            @foreach ($s->usedSpareParts as $part)
+                                                <div class="sparepart-entry d-flex align-items-center mb-1">
+                                                    <input type="text" class="form-control form-control-sm me-1"
+                                                        value="{{ Str::limit($part->description, 30) }} [{{ $part->item_code }}] (Rp {{ number_format($part->pivot->price_at_time_of_use, 0, ',', '.') }})"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="{{ $part->description }} [{{ $part->item_code }}] (Rp {{ number_format($part->pivot->price_at_time_of_use, 0, ',', '.') }})"
+                                                        readonly style="min-width: 300px;">
+                                                    <button type="button" class="btn btn-sm btn-danger remove-sparepart"
+                                                        data-sparepart-id="{{ $part->id }}">&times;</button>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-info add-sparepart mt-1">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </td>
+                                    <td data-id="{{ $s->id }}" style="min-width: 250px;">
+                                        <div class="d-flex align-items-center">
+                                            <input type="date" class="form-control form-control-sm estimation-date"
+                                                name="estimated_start_date"
+                                                value="{{ $s->estimated_start_date ? $s->estimated_start_date->format('Y-m-d') : '' }}"
+                                                title="Tanggal Mulai Estimasi">
+                                            <span class="mx-2">-</span>
+                                            <input type="date" class="form-control form-control-sm estimation-date"
+                                                name="estimated_end_date"
+                                                value="{{ $s->estimated_end_date ? $s->estimated_end_date->format('Y-m-d') : '' }}"
+                                                title="Tanggal Selesai Estimasi">
+                                        </div>
+                                    </td>
                                     <td>
                                         @if ($s->receipt)
                                             @php
@@ -196,17 +234,11 @@
                                             </option>
                                         </select>
                                     </td>
-                                    <td>
-                                        <span class="actual-problem-text">{{ $s->actual_problem ?? '-' }}</span>
-                                        <input type="text"
-                                            class="form-control form-control-sm actual-problem-input d-none"
-                                            value="{{ $s->actual_problem }}">
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-primary btn-toggle-edit"
-                                            data-id="{{ $s->id }}">
-                                            <i class="fa fa-edit"></i>
-                                        </button>
+                                    <td style="min-width: 250px;">
+                                        <input type="text" class="form-control form-control-sm actual-problem-input"
+                                            data-id="{{ $s->id }}" data-field="actual_problem"
+                                            value="{{ $s->actual_problem }}"
+                                            placeholder="Masukkan permasalahan aktual...">
                                     </td>
                                 </tr>
                             @endforeach
@@ -218,6 +250,7 @@
     </div>
 
     <datalist id="serialList"></datalist>
+    <datalist id="sparepartList"></datalist>
 @endsection
 
 @section('scripts')
@@ -318,25 +351,51 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1) Daftarkan custom search function (filter by Tipe Service)
+        $(function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // --- URL Global untuk AJAX ---
+            const addSerialUrl = @json(route('admin.service.addSerial'));
+            const updateSerialUrl = @json(route('admin.service.updateSerial'));
+            const deleteSerialUrl = id => @json(route('admin.service.deleteSerial', ['id' => '__ID__'])).replace('__ID__', id);
+            const serialNumbersUrl = @json(route('serial-numbers'));
+            const addSparepartUrl = serviceId => `{{ url('admin/service') }}/${serviceId}/add-sparepart`;
+            const removeSparepartUrl = (serviceId, sparepartId) =>
+                `{{ url('admin/service') }}/${serviceId}/remove-sparepart/${sparepartId}`;
+            const sparepartCodesUrl = @json(route('admin.sparepart-codes'));
+
+            // --- FUNGSI HELPER ---
+            function showToast(icon, title) {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: icon,
+                    title: title,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+
+            // --- INISIALISASI & FILTER DATATABLE ---
             $.fn.dataTable.ext.search.push((settings, data, dataIndex) => {
                 if (settings.nTable.id !== 'serviceTable') return true;
                 const selectedType = $('#filterTypeService').val();
                 if (!selectedType) return true;
-                const cellNode = settings.aoData[dataIndex].anCells[7];
+                const cellNode = settings.aoData[dataIndex].anCells[
+                    7]; // Sesuaikan indeks jika posisi kolom berubah
                 const currentType = $('select.type-service-dropdown', cellNode).val();
                 return currentType === selectedType;
             });
 
-            // 2) Inisialisasi DataTable sekali, simpan instance
             const table = $('#serviceTable').DataTable({
                 order: [
                     [1, 'desc']
                 ]
             });
 
-            // 3) Filter & Export link update
             const exportBtn = document.getElementById('btnExportExcel');
             $('#filterTypeService').on('change', function() {
                 table.draw();
@@ -345,220 +404,241 @@
                 exportBtn.href = type ? `${base}?type_service=${type}` : base;
             });
 
-            // 4) Styling awal dropdown
             updateDropdownStyle();
 
-            // 5) Delegasi untuk dropdown type/service
-            $('#serviceTable tbody')
-                .on('change', '.type-service-dropdown', function() {
-                    sendUpdate(this);
-                })
-                .on('change', '.status-dropdown', function() {
-                    sendUpdate(this);
-                })
-                .on('change', '.price-dropdown', function() {
-                    sendUpdate(this);
-                });
+            // --- EVENT HANDLERS UTAMA ---
+            const $tableBody = $('#serviceTable tbody');
 
-            // 6) Delegasi untuk tombol edit/save pada actual_problem
-            $('#serviceTable tbody').on('click', '.btn-toggle-edit', function() {
-                const btn = this;
-                const row = btn.closest('tr');
-                const span = row.querySelector('.actual-problem-text');
-                const input = row.querySelector('.actual-problem-input');
-                const icon = btn.querySelector('i');
-                const id = btn.getAttribute('data-id');
+            // Dropdown (Status, Tipe, Harga) - Menggunakan fungsi sendUpdate global
+            $tableBody.on('change', '.type-service-dropdown, .status-dropdown, .price-dropdown', function() {
+                sendUpdate(this);
+            });
 
-                if (icon.classList.contains('fa-save')) {
-                    // Simpan via AJAX
-                    const value = input.value;
-                    fetch("{{ route('admin.service.updateField') }}", {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                id,
-                                field: 'actual_problem',
-                                value
-                            }),
+            // Edit Langsung (Permasalahan Aktual)
+            $tableBody.on('blur', '.actual-problem-input', function() {
+                const $input = $(this);
+                const id = $input.data('id');
+                const field = $input.data('field');
+                const value = $input.val();
+
+                // Kirim data menggunakan fungsi fetch yang sudah ada
+                fetch(updateFieldUrl, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id,
+                            field,
+                            value
                         })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                span.textContent = value || '-';
-                                Swal.fire({
-                                    toast: true,
-                                    position: 'top-end',
-                                    icon: 'success',
-                                    title: 'Berhasil disimpan',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast('success', 'Permasalahan disimpan');
+                        } else {
+                            showToast('error', 'Gagal menyimpan');
+                        }
+                    })
+                    .catch(() => showToast('error', 'Kesalahan server'));
+            });
+
+            // Edit Langsung (Tanggal Estimasi)
+            $tableBody.on('change', '.estimation-date', function() {
+                const $input = $(this);
+                $.post(updateFieldUrl, {
+                        _token: '{{ csrf_token() }}',
+                        id: $input.closest('td').data('id'),
+                        field: $input.attr('name'),
+                        value: $input.val()
+                    })
+                    .done(data => {
+                        showToast(data.success ? 'success' : 'error', data.success ?
+                            'Tanggal disimpan' : 'Gagal menyimpan');
+                    });
+            });
+
+            // --- LOGIKA SERIAL NUMBER ---
+            $tableBody.on('click', '.add-serial', function() {
+                const $wrapper = $(this).siblings('.serials-wrapper');
+                const $newEntry = $(
+                    `<div class="serial-entry d-flex mb-1"><input type="text" class="form-control form-control-sm serial-input me-1" list="serialList" placeholder="Serial baru…"><button type="button" class="btn btn-sm btn-danger remove-serial">&times;</button></div>`
+                );
+                $wrapper.append($newEntry);
+                $newEntry.find('input').focus();
+            });
+            $tableBody.on('click', '.remove-serial', function() {
+                const $entry = $(this).closest('.serial-entry');
+                const serialId = $entry.find('.serial-input').data('serial-id');
+                if (serialId) {
+                    $.ajax({
+                            url: deleteSerialUrl(serialId),
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             }
-                        });
-                    input.classList.add('d-none');
-                    span.classList.remove('d-none');
-                    icon.classList.replace('fa-save', 'fa-edit');
+                        })
+                        .done(() => {
+                            $entry.remove();
+                            showToast('success', 'Dihapus');
+                        })
+                        .fail(() => showToast('error', 'Gagal hapus'));
                 } else {
-                    // Masuk mode edit
-                    input.classList.remove('d-none');
-                    span.classList.add('d-none');
-                    input.focus();
-                    icon.classList.replace('fa-edit', 'fa-save');
+                    $entry.remove();
+                }
+            });
+            $tableBody.on('blur', '.serial-input', function() {
+                const $input = $(this);
+                const value = $input.val().trim();
+                if (!value) return;
+                const serialId = $input.data('serial-id');
+                const serviceId = $input.closest('.serial-cell').data('id');
+                const url = serialId ? updateSerialUrl : addSerialUrl;
+                const payload = serialId ? {
+                    id: serialId,
+                    serial_number: value
+                } : {
+                    service_id: serviceId,
+                    serial_number: value
+                };
+                payload._token = '{{ csrf_token() }}';
+                $.post(url, payload).done(data => {
+                    if (!serialId) $input.data('serial-id', data.id);
+                    showToast('success', serialId ? 'Diupdate' : 'Ditambahkan');
+                }).fail(() => showToast('error', 'Gagal simpan'));
+            });
+            $tableBody.on('input', '.serial-input', function() {
+                const term = $(this).val().trim();
+                if (term.length > 1) {
+                    $.get(serialNumbersUrl, {
+                        q: term
+                    }).done(data => {
+                        const $list = $('#serialList').empty();
+                        data.results.forEach(item => $('<option>').attr('value', item.text)
+                            .appendTo($list));
+                    });
                 }
             });
 
-            // 7) Apply ulang styling setiap kali DataTable redraw (paginate, search, sort)
+            // --- LOGIKA SPAREPART (SEPERTI SERIAL NUMBER) ---
+            $tableBody.on('click', '.add-sparepart', function() {
+                const $wrapper = $(this).siblings('.spareparts-wrapper');
+                // Pastikan input menggunakan datalist yang benar
+                const $newEntry = $(
+                    `<div class="sparepart-entry d-flex mb-1"><input type="text" class="form-control form-control-sm sparepart-input me-1" style="min-width: 300px;" list="sparepartList" placeholder="Cari kode atau nama sparepart…"><button type="button" class="btn btn-sm btn-danger remove-sparepart-transient">&times;</button></div>`
+                );
+                $wrapper.append($newEntry);
+                $newEntry.find('input').focus();
+            });
+
+            // Tombol hapus untuk input yang belum disimpan
+            $tableBody.on('click', '.remove-sparepart-transient', function() {
+                $(this).closest('.sparepart-entry').remove();
+            });
+
+            // Simpan sparepart saat input kehilangan fokus (blur)
+            $tableBody.on('blur', '.sparepart-input', function() {
+                const $input = $(this);
+                const value = $input.val().trim();
+                if (!value) return;
+
+                // **[PERBAIKAN KUNCI 1]** Ekstrak item_code dari label
+                // Kita ambil bagian sebelum " - " karena itu adalah kode itemnya.
+                const itemCode = value.split(' - ')[0].trim();
+
+                const serviceId = $input.closest('.sparepart-cell').data('id');
+
+                $.post(addSparepartUrl(serviceId), {
+                        _token: '{{ csrf_token() }}',
+                        // **[PERBAIKAN KUNCI 2]** Kirim itemCode yang sudah diekstrak
+                        item_code: itemCode
+                    })
+                    .done(response => {
+                        if (response.success) {
+                            const newItem = response.new_item;
+                            const price = new Intl.NumberFormat('id-ID').format(newItem.pivot
+                                .price_at_time_of_use);
+                            // Buat string untuk value yang dipendekkan
+                            const shortValue = (newItem.description.length > 30 ? newItem.description
+                                    .substring(0, 30) + '...' : newItem.description) +
+                                ` [${newItem.item_code}] (Rp ${price})`;
+
+                            // Buat string untuk title yang lengkap
+                            const fullTitle = `${newItem.description} [${newItem.item_code}] (Rp ${price})`;
+
+                            const $newSavedEntry = $(
+                                `<div class="sparepart-entry d-flex align-items-center mb-1">
+                                    <input type="text" class="form-control form-control-sm me-1" style="min-width: 300px;" 
+                                        value="${shortValue}" 
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="${fullTitle}" 
+                                        readonly>
+                                    <button type="button" class="btn btn-sm btn-danger remove-sparepart" data-sparepart-id="${newItem.id}">&times;</button>
+                                </div>`
+                            );
+
+                            $input.closest('.sparepart-entry').replaceWith($newSavedEntry);
+
+                            // Inisialisasi tooltip untuk elemen yang baru ditambahkan
+                            $newSavedEntry.find('[data-bs-toggle="tooltip"]').tooltip();
+
+                            showToast('success', 'Sparepart ditambah');
+                        } else {
+                            showToast('error', response.message || 'Gagal tambah');
+                            $input.closest('.sparepart-entry').remove();
+                        }
+                    }).fail((xhr) => {
+                        // Handle jika item_code tidak ditemukan di database
+                        const errorMessage = xhr.status === 422 ? 'Kode item tidak valid' :
+                            'Error server';
+                        showToast('error', errorMessage);
+                        $input.closest('.sparepart-entry').remove();
+                    });
+            });
+
+            // Hapus sparepart yang sudah ada di database
+            $tableBody.on('click', '.remove-sparepart', function() {
+                const $entry = $(this).closest('.sparepart-entry');
+                const sparepartId = $(this).data('sparepart-id');
+                const serviceId = $(this).closest('.sparepart-cell').data('id');
+                $.ajax({
+                        url: removeSparepartUrl(serviceId, sparepartId),
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    })
+                    .done(() => {
+                        $entry.remove();
+                        showToast('success', 'Sparepart dihapus');
+                    })
+                    .fail(() => showToast('error', 'Gagal hapus'));
+            });
+
+            // Memicu pencarian saat pengguna mengetik
+            $tableBody.on('input', '.sparepart-input', function() {
+                const term = $(this).val().trim();
+                if (term.length > 1) {
+                    $.get(sparepartCodesUrl, {
+                        q: term
+                    }).done(data => {
+                        const $list = $('#sparepartList').empty();
+                        // **[PERBAIKAN KUNCI 3]** Gunakan 'item.label' dari controller
+                        data.forEach(item => {
+                            $('<option>').attr('value', item.label).appendTo($list);
+                        });
+                    });
+                }
+            });
+
+            // --- FINALISASI ---
             table.on('draw', function() {
                 updateDropdownStyle();
             });
         });
     </script>
-
-    {{-- UPDATE SERIAL NUMBER --}}
-    <script>
-        const addSerialUrl = @json(route('admin.service.addSerial'));
-        const updateSerialUrl = @json(route('admin.service.updateSerial'));
-        const deleteSerialUrl = id => @json(route('admin.service.deleteSerial', ['id' => '__ID__'])).replace('__ID__', id);
-        const serialNumbersUrl = @json(route('serial-numbers'));
-
-        function loadSerialSuggestions(term) {
-            $.get(serialNumbersUrl, {
-                    q: term
-                })
-                .done(data => {
-                    const $list = $('#serialList').empty();
-                    data.results.forEach(item => {
-                        $('<option>')
-                            .attr('value', item.text)
-                            .appendTo($list);
-                    });
-                });
-        }
-
-        $(function() {
-            // 1) Tambah entry baru (belum punya ID)
-            $('#serviceTable').on('click', '.add-serial', function() {
-                const $cell = $(this).closest('td.serial-cell');
-                const svcId = $cell.data('id');
-                const $new = $(`
-                    <div class="serial-entry d-flex mb-1">
-                        <input type="text" class="form-control form-control-sm serial-input me-1"
-                            data-serial-id="" list="serialList"
-                            placeholder="Serial baru…" style="min-width: 200px;">
-                        <button type="button" class="btn btn-sm btn-danger remove-serial">&times;</button>
-                    </div>`);
-                $cell.find('.serials-wrapper').append($new);
-            });
-
-            // 2) Hapus entry
-            $('#serviceTable').on('click', '.remove-serial', function() {
-                const $entry = $(this).closest('.serial-entry');
-                const sid = $entry.find('.serial-input').data('serial-id');
-                if (sid) {
-                    // hapus via AJAX
-                    $.ajax({
-                        url: deleteSerialUrl(sid),
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    }).done(() => {
-                        $entry.remove();
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Dihapus',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true,
-                            customClass: {
-                                popup: 'swal2-sm'
-                            }
-                        });
-                    }).fail(() => {
-                        Swal.fire('Gagal', 'Tidak bisa menghapus', 'error');
-                    });
-                } else {
-                    // hanya remove DOM
-                    $entry.remove();
-                }
-            });
-
-            // 3) Simpan/Update on blur
-            $('#serviceTable').on('blur', '.serial-input', function() {
-                const $inp = $(this);
-                const val = $inp.val().trim();
-                if (!val) return;
-
-                const sid = $inp.data('serial-id');
-                const svcId = $inp.closest('td.serial-cell').data('id');
-
-                if (sid) {
-                    // update existing
-                    $.post(updateSerialUrl, {
-                        _token: '{{ csrf_token() }}',
-                        id: sid,
-                        serial_number: val
-                    }).done(data => {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end', // Ganti 'bottom-end' kalau mau di kanan bawah
-                            icon: 'success',
-                            title: 'Diupdate',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true,
-                            customClass: {
-                                popup: 'swal2-sm'
-                            }
-                        });
-                    });
-                } else {
-                    // create new
-                    $.post(addSerialUrl, {
-                        _token: '{{ csrf_token() }}',
-                        service_id: svcId,
-                        serial_number: val
-                    }).done(data => {
-                        // pasang data-serial-id agar berikutnya jadi update
-                        $inp.data('serial-id', data.id);
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end', // Ganti 'bottom-end' kalau mau di kanan bawah
-                            icon: 'success',
-                            title: 'Ditambahkan',
-                            showConfirmButton: false,
-                            timer: 1500,
-                            timerProgressBar: true,
-                            customClass: {
-                                popup: 'swal2-sm'
-                            }
-                        });
-                    }).fail(() => {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'error',
-                            title: 'Terjadi kesalahan saat menyimpan',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    });
-                }
-            });
-
-            $('#serviceTable').on('input', '.serial-input', function() {
-                const term = $(this).val().trim();
-                if (term.length >= 1) {
-                    loadSerialSuggestions(term);
-                }
-            });
-        });
-    </script>
-
 
 @endsection

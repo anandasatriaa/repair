@@ -22,10 +22,14 @@ class ProductService extends Model
         'type_service',
         'status',
         'actual_problem',
+        'estimated_start_date',
+        'estimated_end_date',
     ];
 
     protected $casts = [
         'date' => 'datetime',
+        'estimated_start_date' => 'date',
+        'estimated_end_date' => 'date',
     ];
 
     // Jika kamu menggunakan timestamps (created_at/updated_at), pastikan properti berikut:
@@ -34,5 +38,12 @@ class ProductService extends Model
     public function serials()
     {
         return $this->hasMany(ProductServiceSerial::class);
+    }
+
+    public function usedSpareParts()
+    {
+        return $this->belongsToMany(SparePart::class, 'service_spare_part_pivot')
+            ->withPivot('price_at_time_of_use')
+            ->withTimestamps();
     }
 }

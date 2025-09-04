@@ -23,13 +23,13 @@ class ServiceExport implements FromView, ShouldAutoSize, WithEvents
     public function view(): View
     {
         $query = ProductService::where('category', $this->category)
-            ->with('serials');
+            ->with(['serials', 'usedSpareParts']);
 
         if ($this->typeFilter) {
             $query->where('type_service', $this->typeFilter);
         }
 
-        $services = $query->get();
+        $services = $query->orderBy('date', 'desc')->get();
 
         return view('admin.exports.service', [
             'services'   => $services,

@@ -1,0 +1,22 @@
+---
+deployment:
+  tasks:
+    # Ganti "mileniag" dengan username cPanel Anda dan "repair" dengan nama folder proyek Anda
+    - export DEPLOYPATH=/home/mileniag/repair/
+    
+    # 1. Salin semua file dari repository ke folder tujuan
+    - /bin/cp -R * $DEPLOYPATH
+    
+    # 2. Masuk ke folder tujuan
+    - cd $DEPLOYPATH
+    
+    # 3. Install dependensi Composer
+    - /usr/local/bin/composer install --no-dev --optimize-autoloader
+    
+    # 4. Jalankan migrasi database
+    - /usr/local/bin/php artisan migrate --force
+    
+    # 5. Buat cache untuk optimasi
+    - /usr/local/bin/php artisan config:cache
+    - /usr/local/bin/php artisan route:cache
+    - /usr/local/bin/php artisan view:cache

@@ -629,20 +629,16 @@
 
     {{-- Store & Mengambil Serial Number dan Tipe Produk ke Dropdown --}}
     <script>
-        const serialNumbersUrl = @json(route('serial-numbers'));
-        const productDescriptionUrl = @json(route('product-description'));
-        const storeUrl = @json(route('form-service.store'));
+        $(document).ready(function() {
+            // Definisikan URL dari route Laravel
+            const serialNumbersUrl = @json(route('serial-numbers'));
+            const productDescriptionUrl = @json(route('product-description'));
+            const storeUrl = @json(route('form-service.store'));
 
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        $(function() {
-            // Init Select2
+            // Inisialisasi Select2
             $('#serialNumber').select2({
-                placeholder: 'Cari serial number...',
+                placeholder: 'Ketik untuk mencari serial number...',
+                allowClear: true,
                 ajax: {
                     url: serialNumbersUrl,
                     dataType: 'json',
@@ -657,76 +653,101 @@
                 }
             });
 
-            // Toggle visibility and required attributes
+            // Fungsi untuk mengatur tampilan input serial number
             function toggleMode() {
                 const brand = $('#brand').val();
-
-                // Serial Number vs Manual
                 if (brand === 'rupes') {
-                    $('#serialSelectGroup').addClass('d-none')
-                        .find('select').prop('required', false).prop('disabled', false);
-                    $('#serialManualGroup').removeClass('d-none')
-                        .find('input').prop('required', false).prop('disabled', false);
+                    $('#serialSelectGroup').addClass('d-none');
+                    $('#serialManualGroup').removeClass('d-none');
                 } else {
-                    $('#serialSelectGroup').removeClass('d-none')
-                        .find('select').prop('required', false).prop('disabled', false);
-                    $('#serialManualGroup').addClass('d-none')
-                        .find('input').prop('required', false).prop('disabled', false);
+                    $('#serialSelectGroup').removeClass('d-none');
+                    $('#serialManualGroup').addClass('d-none');
                 }
-
-                // Product Type: selalu editable
-                $('#productType').prop('readonly', false).prop('required', true);
             }
-            // On brand change
-            $('#brand').change(() => {
+
+            // Event handler saat brand diganti
+            $('#brand').on('change', function() {
                 toggleMode();
-                // reset fields
+                // Reset field terkait saat brand diganti
                 $('#serialNumber').val(null).trigger('change');
                 $('#serialManual').val('');
                 $('#productType').val('');
             });
-            toggleMode(); // initial state
+            toggleMode(); // Panggil saat halaman pertama kali dimuat
 
-            // Fetch productType for ctek/noco
-            $('#serialNumber').change(function() {
-                const serial = $(this).val();
-                if (!serial) return $('#productType').val('');
+            // Event handler saat serial number DIPILIH
+            $('#serialNumber').on('select2:select', function(e) {
+                const serial = e.params.data.id;
+                if (!serial) return;
+
                 $.get(productDescriptionUrl, {
-                    serial
-                }, data => {
+                    serial: serial
+                }, function(data) {
                     $('#productType').val(data.description || '');
+                }).fail(function() {
+                    console.error('Gagal mengambil deskripsi produk.');
+                    $('#productType').val('');
                 });
             });
 
-            // File preview
-            $('#purchaseProofInput').change(function(e) {
+            // Event handler saat pilihan serial number DIHAPUS
+            $('#serialNumber').on('select2:unselect', function() {
+                $('#productType').val('');
+            });
+
+            // Event handler untuk file preview (jika Anda membutuhkannya)
+            $('#purchaseProofInput').on('change', function(e) {
                 const file = e.target.files[0];
-                $('#filePreview').empty();
-                $('#fileName').text(file ? file.name : 'Belum ada file dipilih');
-                if (file) {
-                    if (file.type.startsWith('image/')) {
-                        const reader = new FileReader();
-                        reader.onload = ev => $('#filePreview').append($('<img>', {
-                            src: ev.target.result,
-                            class: 'file-preview img-fluid'
-                        }));
-                        reader.readAsDataURL(file);
-                    } else if (file.type === 'application/pdf') {
-                        $('#filePreview').append($('<embed>', {
-                            src: URL.createObjectURL(file),
-                            type: 'application/pdf',
-                            width: '100%',
-                            height: '300px',
-                            class: 'file-preview'
-                        }));
-                    } else {
-                        $('#filePreview').text('File tidak didukung untuk preview.');
-                    }
+                const filePreview = $('#filePreview');
+                const fileNameDisplay = $('#fileName');
+
+                // Kosongkan preview sebelumnya
+                filePreview.empty();
+
+                // Jika tidak ada file yang dipilih, reset
+                if (!file) {
+                    fileNameDisplay.text('Belum ada file dipilih');
+                    return;
+                }
+
+                // Tampilkan nama file
+                fileNameDisplay.text(file.name);
+
+                // Cek tipe file untuk preview
+                if (file.type.startsWith('image/')) {
+                    // Jika file adalah gambar
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = $('<img>', {
+                            src: event.target.result,
+                            alt: file.name,
+                            css: {
+                                maxWidth: '100%',
+                                maxHeight: '200px',
+                                objectFit: 'contain'
+                            }
+                        });
+                        filePreview.append(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type === 'application/pdf') {
+                    // Jika file adalah PDF
+                    const embed = $('<embed>', {
+                        src: URL.createObjectURL(file),
+                        type: 'application/pdf',
+                        width: '100%',
+                        height: '300px'
+                    });
+                    filePreview.append(embed);
+                } else {
+                    // Jika tipe file lain
+                    filePreview.html(
+                        '<p class="text-muted">Preview tidak tersedia untuk tipe file ini.</p>');
                 }
             });
 
-            // AJAX submit
-            $('#serviceRequestForm').submit(function(e) {
+            // AJAX submit form
+            $('#serviceRequestForm').on('submit', function(e) {
                 e.preventDefault();
                 const form = this;
                 const submitButton = $(this).find('button[type="submit"]');
@@ -736,41 +757,34 @@
                     return;
                 }
 
-                submitButton.prop('disabled', true);
-                submitButton.html(
+                submitButton.prop('disabled', true).html(
                     `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Mengirim...`
                 );
-
-                const data = new FormData(form);
 
                 $.ajax({
                     url: storeUrl,
                     method: 'POST',
-                    data,
+                    data: new FormData(form),
                     processData: false,
                     contentType: false,
-                    success: () => {
-                        Swal.fire('Berhasil!', 'Permintaan service berhasil dikirim.',
-                            'success');
+                    success: function(response) {
+                        Swal.fire('Berhasil!', response.message ||
+                            'Permintaan service berhasil dikirim.', 'success');
                         form.reset();
                         $('#serialNumber').val(null).trigger('change');
                         $('#filePreview').empty();
                         $('#fileName').text('Belum ada file dipilih');
                         toggleMode();
                     },
-                    error: xhr => {
+                    error: function(xhr) {
                         let msg = 'Terjadi kesalahan. Coba lagi.';
-                        if (xhr.responseJSON?.errors) {
-                            const key = Object.keys(xhr.responseJSON.errors)[0];
-                            msg = xhr.responseJSON.errors[key][0];
-                        } else if (xhr.responseJSON?.message) {
+                        if (xhr.responseJSON?.message) {
                             msg = xhr.responseJSON.message;
                         }
                         Swal.fire('Gagal', msg, 'error');
                     },
-                    complete: () => {
-                        submitButton.prop('disabled', false);
-                        submitButton.html(
+                    complete: function() {
+                        submitButton.prop('disabled', false).html(
                             `<i class="bi bi-send me-2"></i>Kirim Permintaan Service`
                         );
                     }

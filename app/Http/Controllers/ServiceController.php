@@ -18,18 +18,14 @@ class ServiceController extends Controller
     {
         $search = $request->query('q');
 
-        $results = DB::connection('firebird')
-            ->table('CGARANSIOUTDETAIL')
-            ->select('CGDSN')
-            ->where('CGDSN', 'like', '%' . $search . '%')
+        // Menggunakan koneksi default (MySQL) ke tabel baru.
+        // Langsung format output untuk Select2 agar lebih efisien.
+        $results = DB::table('product_warranties')
+            ->select('serial_number as id', 'serial_number as text')
+            ->where('serial_number', 'like', '%' . $search . '%')
             ->distinct()
-            ->get()
-            ->map(function ($row) {
-                return [
-                    'id' => $row->CGDSN,
-                    'text' => $row->CGDSN
-                ];
-            });
+            ->limit(20) // Tambahkan limit untuk performa
+            ->get();
 
         return response()->json(['results' => $results]);
     }
@@ -38,36 +34,28 @@ class ServiceController extends Controller
     {
         $serial = $request->query('serial');
 
-        // Trim padding spasi di sisi Firebird
-        $itemID = DB::connection('firebird')
-            ->table('CGARANSIOUTDETAIL')
-            ->selectRaw('TRIM(CGDITEMID) as CGDITEMID')  // optional: trim ITEMID juga
-            ->whereRaw('TRIM(CGDSN) = ?', [$serial])
-            ->value('CGDITEMID');
+        Log::info('[getProductDescription] Mencari serial di tabel lokal: ' . $serial);
 
-        Log::info('[getProductDescription] serial: ' . $serial);
-        Log::info('[getProductDescription] CGDITEMID (trimmed): ' . var_export($itemID, true));
+        // Cukup satu query ke tabel lokal untuk mendapatkan semua info.
+        $product = DB::table('product_warranties')
+            ->select('product_description', 'brand_description')
+            ->where('serial_number', $serial)
+            ->first();
 
-        if (!$itemID) {
-            Log::warning('[getProductDescription] itemID null for serial ' . $serial);
+        Log::info('[getProductDescription] Hasil dari tabel lokal: ' . var_export($product, true));
+
+        // Jika tidak ditemukan, kembalikan null
+        if (!$product) {
             return response()->json([
                 'description' => null,
                 'category' => null
             ]);
         }
 
-        $product = DB::connection('sqlsrv-snx')
-            ->table('MFIMA')
-            ->leftJoin('MFIB', 'MFIMA.MFIMA_Brand', '=', 'MFIB.MFIB_BrandID')
-            ->select('MFIMA.MFIMA_Description', 'MFIB.MFIB_Description as BrandDescription')
-            ->where('MFIMA.MFIMA_ItemID', $itemID)
-            ->first();
-
-        Log::info('[getProductDescription] description: ' . var_export($product, true));
-
+        // Kembalikan data dari tabel lokal
         return response()->json([
-            'description' => $product->MFIMA_Description ?? null,
-            'category' => $product->BrandDescription ?? null,
+            'description' => $product->product_description,
+            'category' => $product->brand_description,
         ]);
     }
 

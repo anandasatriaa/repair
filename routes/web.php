@@ -12,11 +12,10 @@ Route::get('/', function () {
 });
 
 Route::get('/form-service', [ServiceController::class, 'index'])->name('form-service');
-Route::get('/api/serial-numbers', [ServiceController::class, 'getSerialNumbers'])->name('serial-numbers');
-Route::get('/api/product-description', [ServiceController::class, 'getProductDescription'])->name('product-description');
-
 Route::post('/form-service/store', [ServiceController::class, 'store'])->name('form-service.store');
 
+Route::get('/api/serial-numbers', [ServiceController::class, 'getSerialNumbers'])->name('serial-numbers');
+Route::get('/api/product-description', [ServiceController::class, 'getProductDescription'])->name('product-description');
 
 // Admin
 Route::get('/admin', [AuthController::class, 'showLoginForm'])->name('admin.login');

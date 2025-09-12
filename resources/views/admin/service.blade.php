@@ -37,6 +37,11 @@
             background-color: #ffffff !important;
             opacity: 1;
         }
+
+        .serial-cell {
+            min-width: 250px; 
+            vertical-align: top;
+        }
     </style>
 
 @endsection

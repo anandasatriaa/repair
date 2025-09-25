@@ -440,9 +440,9 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="customerEmail" class="form-label required">Email Pelanggan</label>
+                                        <label for="customerEmail" class="form-label">Email Pelanggan</label>
                                         <input type="email" class="form-control" id="customerEmail"
-                                            name="customer_email" required placeholder="contoh@email.com">
+                                            name="customer_email" placeholder="contoh@email.com">
                                     </div>
 
                                     <div class="mb-3">
@@ -639,6 +639,7 @@
             $('#serialNumber').select2({
                 placeholder: 'Ketik untuk mencari serial number...',
                 allowClear: true,
+                tags: true,
                 ajax: {
                     url: serialNumbersUrl,
                     dataType: 'json',
@@ -650,6 +651,14 @@
                         results: data.results
                     }),
                     cache: true
+                },
+                // Fungsi ini memastikan nilai baru (tag) dapat dibuat
+                createTag: function(params) {
+                    return {
+                        id: params.term,
+                        text: params.term,
+                        newTag: true
+                    }
                 }
             });
 
@@ -677,6 +686,12 @@
 
             // Event handler saat serial number DIPILIH
             $('#serialNumber').on('select2:select', function(e) {
+                // Jangan ambil deskripsi jika ini adalah tag baru
+                if (e.params.data.newTag) {
+                    $('#productType').val(''); // Kosongkan tipe produk jika serial baru
+                    return;
+                }
+
                 const serial = e.params.data.id;
                 if (!serial) return;
 

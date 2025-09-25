@@ -68,7 +68,7 @@ class ServiceController extends Controller
             'product_type'      => 'required|string',
             'issue_description' => 'required|string',
             'customer_name'     => 'required|string',
-            'customer_email'    => 'required|email',
+            'customer_email'    => 'nullable|email',
             'customer_phone'    => 'required|string',
             'purchase_proof'    => 'nullable|file|mimes:jpeg,jpg,png,gif,svg,webp,pdf|max:10240',
         ]);

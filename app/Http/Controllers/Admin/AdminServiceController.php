@@ -10,6 +10,9 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ServiceExport;
 use App\Models\SparePart;
 use Illuminate\Support\Str;
+use App\Mail\ServiceUpdateNotification;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class AdminServiceController extends Controller
 {
@@ -29,6 +32,12 @@ class AdminServiceController extends Controller
             'value' => 'nullable'
         ]);
 
+        if ($request->field === 'status') {
+            $request->validate([
+                'value' => 'in:ON PROGRESS,APPROVAL CUSTOMER,DONE'
+            ]);
+        }
+
         $service = ProductService::findOrFail($request->id);
         if ($request->field === 'price') {
             $service->price = (int) $request->value;
@@ -37,6 +46,17 @@ class AdminServiceController extends Controller
         }
 
         $service->save();
+
+        if ($request->field === 'price' && !is_null($request->value) && $request->value > 0) {
+            try {
+                // Eager load relasi yang dibutuhkan untuk email
+                $service->load('serials');
+                Mail::to('it.web2@ccas.co.id')->send(new ServiceUpdateNotification($service, 'Harga Jasa Ditambahkan/Diubah'));
+            } catch (\Exception $e) {
+                // Opsional: catat error jika email gagal terkirim
+                Log::error('Email notification failed for service ID ' . $service->id . ': ' . $e->getMessage());
+            }
+        }
 
         return response()->json(['success' => true]);
     }
@@ -126,6 +146,19 @@ class AdminServiceController extends Controller
             $service->usedSpareParts()->attach($sparePart->id, [
                 'price_at_time_of_use' => $currentPrice
             ]);
+
+            try {
+                $service->load('serials', 'usedSpareParts');
+                $newlyAddedSparepart = $service->usedSpareParts->where('id', $sparePart->id)->first();
+
+                if ($newlyAddedSparepart) {
+                    Mail::to('it.web2@ccas.co.id')
+                        ->send(new ServiceUpdateNotification($service, 'Sparepart Ditambahkan', $newlyAddedSparepart));
+                }
+            } catch (\Throwable $t) {
+                Log::error('Email notification for sparepart failed for service ID ' . $service->id . ': ' . $t->getMessage());
+            }
+
         } else {
             // Jika sudah ada, kirim response error untuk di-handle di frontend
             return response()->json(['success' => false, 'message' => 'Sparepart sudah ditambahkan.'], 409);
@@ -145,8 +178,18 @@ class AdminServiceController extends Controller
 
     public function removeUsedSparePart(ProductService $service, SparePart $sparePart)
     {
-        // Menggunakan detach untuk menghapus relasi dari pivot table
+        $removedSparepartName = $sparePart->description . ' (' . $sparePart->item_code . ')';
+
         $service->usedSpareParts()->detach($sparePart->id);
+
+        try {
+            $service->load('serials', 'usedSpareParts');
+
+            Mail::to('it.web2@ccas.co.id')
+                ->queue(new ServiceUpdateNotification($service, 'Sparepart Dihapus (' . $removedSparepartName . ')'));
+        } catch (\Throwable $t) {
+            Log::error('Email notification for sparepart removal failed for service ID ' . $service->id . ': ' . $t->getMessage());
+        }
 
         return response()->json(['success' => true]);
     }

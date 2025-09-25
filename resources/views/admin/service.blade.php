@@ -39,7 +39,7 @@
         }
 
         .serial-cell {
-            min-width: 250px; 
+            min-width: 250px;
             vertical-align: top;
         }
     </style>
@@ -64,6 +64,7 @@
                         <div>
                             <strong>Status Penyelesaian Service:</strong><br>
                             <span class="badge bg-warning text-dark">ON PROGRESS</span>
+                            <span class="badge bg-info">APPROVAL CUSTOMER</span>
                             <span class="badge bg-success">DONE</span>
                         </div>
                     </div>
@@ -232,9 +233,12 @@
                                     <td>
                                         <select class="form-select form-select-sm status-dropdown"
                                             data-id="{{ $s->id }}" data-field="status"
-                                            style="min-width: 140px; font-size: 0.875rem;">
+                                            style="min-width: 200px; font-size: 0.875rem;">
                                             <option value="ON PROGRESS"
                                                 {{ $s->status == 'ON PROGRESS' ? 'selected' : '' }}>ON PROGRESS</option>
+                                            <option value="APPROVAL CUSTOMER"
+                                                {{ $s->status == 'APPROVAL CUSTOMER' ? 'selected' : '' }}>APPROVAL CUSTOMER
+                                            </option>
                                             <option value="DONE" {{ $s->status == 'DONE' ? 'selected' : '' }}>DONE
                                             </option>
                                         </select>
@@ -262,6 +266,31 @@
 
     {{-- UPDATE STATUS & TYPE SERVICE --}}
     <script>
+        // FUNGSI GLOBAL BARU UNTUK MENAMPILKAN LOADING
+        function showLoadingToast() {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                title: 'Mengirim notifikasi...',
+                showConfirmButton: false, // Sembunyikan tombol OK
+                didOpen: () => {
+                    Swal.showLoading(); // Tampilkan ikon loading bawaan
+                }
+            });
+        }
+
+        // FUNGSI GLOBAL UNTUK MENAMPILKAN TOAST (SUDAH ADA SEBELUMNYA)
+        function showToast(icon, title) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: icon,
+                title: title,
+                showConfirmButton: false,
+                timer: 2000 // durasi sedikit lebih lama agar terbaca
+            });
+        }
+
         function updateDropdownStyle() {
             // existing type-service
             document.querySelectorAll('.type-service-dropdown').forEach(select => {
@@ -275,10 +304,12 @@
 
             // existing status
             document.querySelectorAll('.status-dropdown').forEach(select => {
-                select.classList.remove('bg-warning', 'bg-success', 'text-white', 'text-dark');
+                select.classList.remove('bg-warning', 'bg-info', 'bg-success', 'text-white', 'text-dark');
                 if (select.value === 'DONE') {
                     select.classList.add('bg-success', 'text-white');
-                } else {
+                } else if (select.value === 'APPROVAL CUSTOMER') {
+                    select.classList.add('bg-info', 'text-white');
+                } else { // ON PROGRESS
                     select.classList.add('bg-warning', 'text-dark');
                 }
             });
@@ -306,6 +337,11 @@
             const id = selectElement.dataset.id;
             const field = selectElement.dataset.field;
             const value = selectElement.value;
+            const isPriceUpdate = field === 'price'; // Cek apakah ini update harga
+
+            if (isPriceUpdate) {
+                showLoadingToast(); // MODIFIKASI: Panggil loading toast
+            }
 
             fetch(updateFieldUrl, {
                     method: 'POST',
@@ -319,38 +355,25 @@
                         value
                     })
                 })
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) {
+                        // Jika server merespon dengan error (misal: 500), lempar error
+                        throw new Error('Server response was not ok.');
+                    }
+                    return res.json();
+                })
                 .then(data => {
+                    if (isPriceUpdate) Swal.close(); // MODIFIKASI: Tutup Swal saat selesai
                     if (data.success) {
                         updateDropdownStyle();
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'success',
-                            title: 'Berhasil disimpan',
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
+                        showToast('success', 'Berhasil disimpan');
                     } else {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'error',
-                            title: 'Gagal update data',
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
+                        showToast('error', 'Gagal update data');
                     }
                 })
                 .catch(() => {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: 'error',
-                        title: 'Kesalahan server',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
+                    if (isPriceUpdate) Swal.close(); // MODIFIKASI: Tutup Swal jika error
+                    showToast('error', 'Kesalahan server, email mungkin gagal terkirim.');
                 });
         }
     </script>
@@ -362,7 +385,7 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
 
-            // --- URL Global untuk AJAX ---
+            // --- URL Global untuk AJAX (TETAP SAMA) ---
             const addSerialUrl = @json(route('admin.service.addSerial'));
             const updateSerialUrl = @json(route('admin.service.updateSerial'));
             const deleteSerialUrl = id => @json(route('admin.service.deleteSerial', ['id' => '__ID__'])).replace('__ID__', id);
@@ -372,25 +395,12 @@
                 `{{ url('admin/service') }}/${serviceId}/remove-sparepart/${sparepartId}`;
             const sparepartCodesUrl = @json(route('admin.sparepart-codes'));
 
-            // --- FUNGSI HELPER ---
-            function showToast(icon, title) {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: icon,
-                    title: title,
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            }
-
-            // --- INISIALISASI & FILTER DATATABLE ---
+            // --- INISIALISASI & FILTER DATATABLE (TETAP SAMA) ---
             $.fn.dataTable.ext.search.push((settings, data, dataIndex) => {
                 if (settings.nTable.id !== 'serviceTable') return true;
                 const selectedType = $('#filterTypeService').val();
                 if (!selectedType) return true;
-                const cellNode = settings.aoData[dataIndex].anCells[
-                    7]; // Sesuaikan indeks jika posisi kolom berubah
+                const cellNode = settings.aoData[dataIndex].anCells[7];
                 const currentType = $('select.type-service-dropdown', cellNode).val();
                 return currentType === selectedType;
             });
@@ -411,22 +421,18 @@
 
             updateDropdownStyle();
 
-            // --- EVENT HANDLERS UTAMA ---
+            // --- EVENT HANDLERS UTAMA (TETAP SAMA) ---
             const $tableBody = $('#serviceTable tbody');
 
-            // Dropdown (Status, Tipe, Harga) - Menggunakan fungsi sendUpdate global
             $tableBody.on('change', '.type-service-dropdown, .status-dropdown, .price-dropdown', function() {
                 sendUpdate(this);
             });
 
-            // Edit Langsung (Permasalahan Aktual)
             $tableBody.on('blur', '.actual-problem-input', function() {
                 const $input = $(this);
                 const id = $input.data('id');
                 const field = $input.data('field');
                 const value = $input.val();
-
-                // Kirim data menggunakan fungsi fetch yang sudah ada
                 fetch(updateFieldUrl, {
                         method: 'POST',
                         headers: {
@@ -441,31 +447,26 @@
                     })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.success) {
-                            showToast('success', 'Permasalahan disimpan');
-                        } else {
-                            showToast('error', 'Gagal menyimpan');
-                        }
+                        showToast(data.success ? 'success' : 'error', data.success ?
+                            'Permasalahan disimpan' : 'Gagal menyimpan');
                     })
                     .catch(() => showToast('error', 'Kesalahan server'));
             });
 
-            // Edit Langsung (Tanggal Estimasi)
             $tableBody.on('change', '.estimation-date', function() {
                 const $input = $(this);
                 $.post(updateFieldUrl, {
-                        _token: '{{ csrf_token() }}',
-                        id: $input.closest('td').data('id'),
-                        field: $input.attr('name'),
-                        value: $input.val()
-                    })
-                    .done(data => {
-                        showToast(data.success ? 'success' : 'error', data.success ?
-                            'Tanggal disimpan' : 'Gagal menyimpan');
-                    });
+                    _token: '{{ csrf_token() }}',
+                    id: $input.closest('td').data('id'),
+                    field: $input.attr('name'),
+                    value: $input.val()
+                }).done(data => {
+                    showToast(data.success ? 'success' : 'error', data.success ?
+                        'Tanggal disimpan' : 'Gagal menyimpan');
+                });
             });
 
-            // --- LOGIKA SERIAL NUMBER ---
+            // --- LOGIKA SERIAL NUMBER (TETAP SAMA) ---
             $tableBody.on('click', '.add-serial', function() {
                 const $wrapper = $(this).siblings('.serials-wrapper');
                 const $newEntry = $(
@@ -527,10 +528,9 @@
                 }
             });
 
-            // --- LOGIKA SPAREPART (SEPERTI SERIAL NUMBER) ---
+            // --- LOGIKA SPAREPART ---
             $tableBody.on('click', '.add-sparepart', function() {
                 const $wrapper = $(this).siblings('.spareparts-wrapper');
-                // Pastikan input menggunakan datalist yang benar
                 const $newEntry = $(
                     `<div class="sparepart-entry d-flex mb-1"><input type="text" class="form-control form-control-sm sparepart-input me-1" style="min-width: 300px;" list="sparepartList" placeholder="Cari kode atau nama sparepart…"><button type="button" class="btn btn-sm btn-danger remove-sparepart-transient">&times;</button></div>`
                 );
@@ -538,7 +538,6 @@
                 $newEntry.find('input').focus();
             });
 
-            // Tombol hapus untuk input yang belum disimpan
             $tableBody.on('click', '.remove-sparepart-transient', function() {
                 $(this).closest('.sparepart-entry').remove();
             });
@@ -549,56 +548,45 @@
                 const value = $input.val().trim();
                 if (!value) return;
 
-                // **[PERBAIKAN KUNCI 1]** Ekstrak item_code dari label
-                // Kita ambil bagian sebelum " - " karena itu adalah kode itemnya.
                 const itemCode = value.split(' - ')[0].trim();
-
                 const serviceId = $input.closest('.sparepart-cell').data('id');
+
+                // ## REVISI DI SINI ##
+                // Menggunakan loading toast non-blokir
+                showLoadingToast();
 
                 $.post(addSparepartUrl(serviceId), {
                         _token: '{{ csrf_token() }}',
-                        // **[PERBAIKAN KUNCI 2]** Kirim itemCode yang sudah diekstrak
                         item_code: itemCode
                     })
                     .done(response => {
+                        Swal.close(); // Tutup loading
                         if (response.success) {
                             const newItem = response.new_item;
                             const price = new Intl.NumberFormat('id-ID').format(newItem.pivot
                                 .price_at_time_of_use);
-                            // Buat string untuk value yang dipendekkan
                             const shortValue = (newItem.description.length > 30 ? newItem.description
                                     .substring(0, 30) + '...' : newItem.description) +
                                 ` [${newItem.item_code}] (Rp ${price})`;
-
-                            // Buat string untuk title yang lengkap
-                            const fullTitle = `${newItem.description} [${newItem.item_code}] (Rp ${price})`;
-
+                            const fullTitle =
+                                `${newItem.description} [${newItem.item_code}] (Rp ${price})`;
                             const $newSavedEntry = $(
                                 `<div class="sparepart-entry d-flex align-items-center mb-1">
-                                    <input type="text" class="form-control form-control-sm me-1" style="min-width: 300px;" 
-                                        value="${shortValue}" 
-                                        data-bs-toggle="tooltip" 
-                                        data-bs-placement="top" 
-                                        title="${fullTitle}" 
-                                        readonly>
-                                    <button type="button" class="btn btn-sm btn-danger remove-sparepart" data-sparepart-id="${newItem.id}">&times;</button>
-                                </div>`
+                                <input type="text" class="form-control form-control-sm me-1" style="min-width: 300px;" value="${shortValue}" data-bs-toggle="tooltip" data-bs-placement="top" title="${fullTitle}" readonly>
+                                <button type="button" class="btn btn-sm btn-danger remove-sparepart" data-sparepart-id="${newItem.id}">&times;</button>
+                            </div>`
                             );
-
                             $input.closest('.sparepart-entry').replaceWith($newSavedEntry);
-
-                            // Inisialisasi tooltip untuk elemen yang baru ditambahkan
                             $newSavedEntry.find('[data-bs-toggle="tooltip"]').tooltip();
-
                             showToast('success', 'Sparepart ditambah');
                         } else {
                             showToast('error', response.message || 'Gagal tambah');
                             $input.closest('.sparepart-entry').remove();
                         }
                     }).fail((xhr) => {
-                        // Handle jika item_code tidak ditemukan di database
-                        const errorMessage = xhr.status === 422 ? 'Kode item tidak valid' :
-                            'Error server';
+                        Swal.close(); // Tutup loading
+                        const errorMessage = xhr.status === 409 ? 'Sparepart ini sudah ada.' : (xhr
+                            .status === 422 ? 'Kode item tidak valid' : 'Error server');
                         showToast('error', errorMessage);
                         $input.closest('.sparepart-entry').remove();
                     });
@@ -606,9 +594,15 @@
 
             // Hapus sparepart yang sudah ada di database
             $tableBody.on('click', '.remove-sparepart', function() {
-                const $entry = $(this).closest('.sparepart-entry');
-                const sparepartId = $(this).data('sparepart-id');
-                const serviceId = $(this).closest('.sparepart-cell').data('id');
+                const $button = $(this);
+                const $entry = $button.closest('.sparepart-entry');
+                const sparepartId = $button.data('sparepart-id');
+                const serviceId = $button.closest('.sparepart-cell').data('id');
+
+                // ## REVISI DI SINI ##
+                // Menggunakan loading toast non-blokir
+                showLoadingToast();
+
                 $.ajax({
                         url: removeSparepartUrl(serviceId, sparepartId),
                         method: 'DELETE',
@@ -617,13 +611,17 @@
                         }
                     })
                     .done(() => {
+                        Swal.close(); // Tutup loading
                         $entry.remove();
                         showToast('success', 'Sparepart dihapus');
                     })
-                    .fail(() => showToast('error', 'Gagal hapus'));
+                    .fail(() => {
+                        Swal.close(); // Tutup loading
+                        showToast('error', 'Gagal hapus');
+                    });
             });
 
-            // Memicu pencarian saat pengguna mengetik
+            // Memicu pencarian saat pengguna mengetik (TETAP SAMA)
             $tableBody.on('input', '.sparepart-input', function() {
                 const term = $(this).val().trim();
                 if (term.length > 1) {
@@ -631,7 +629,6 @@
                         q: term
                     }).done(data => {
                         const $list = $('#sparepartList').empty();
-                        // **[PERBAIKAN KUNCI 3]** Gunakan 'item.label' dari controller
                         data.forEach(item => {
                             $('<option>').attr('value', item.label).appendTo($list);
                         });

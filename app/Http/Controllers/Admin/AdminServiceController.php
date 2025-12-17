@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use App\Mail\ServiceUpdateNotification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class AdminServiceController extends Controller
 {
@@ -28,7 +29,7 @@ class AdminServiceController extends Controller
     {
         $request->validate([
             'id' => 'required|exists:product_services,id',
-            'field' => 'required|in:type_service,status,actual_problem,price,estimated_start_date,estimated_end_date',
+            'field' => 'required|in:type_service,status,actual_problem,price,estimated_start_date,estimated_end_date,return_description,return_proof',
             'value' => 'nullable'
         ]);
 
@@ -45,6 +46,7 @@ class AdminServiceController extends Controller
             $service->{$request->field} = $request->value;
         }
 
+        $service->{$request->field} = $request->value;
         $service->save();
 
         if ($request->field === 'price' && !is_null($request->value) && $request->value > 0) {
@@ -158,7 +160,6 @@ class AdminServiceController extends Controller
             } catch (\Throwable $t) {
                 Log::error('Email notification for sparepart failed for service ID ' . $service->id . ': ' . $t->getMessage());
             }
-
         } else {
             // Jika sudah ada, kirim response error untuk di-handle di frontend
             return response()->json(['success' => false, 'message' => 'Sparepart sudah ditambahkan.'], 409);
@@ -192,5 +193,36 @@ class AdminServiceController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    public function uploadReturnProof(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:product_services,id',
+            'file' => 'required|image|max:2048' // Max 2MB
+        ]);
+
+        $service = ProductService::findOrFail($request->id);
+
+        if ($request->hasFile('file')) {
+
+            if ($service->return_proof) {
+                if (Storage::disk('public')->exists($service->return_proof)) {
+                    Storage::disk('public')->delete($service->return_proof);
+                }
+            }
+
+            $path = $request->file('file')->store('return_proofs', 'public');
+
+            $service->return_proof = $path;
+            $service->save();
+
+            return response()->json([
+                'success' => true,
+                'path' => asset('storage/' . $path)
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'File tidak ditemukan'], 400);
     }
 }

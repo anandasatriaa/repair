@@ -32,6 +32,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::delete('/service/delete-serial/{id}', [AdminServiceController::class, 'deleteSerial'])->name('service.deleteSerial');
     Route::post('/service/{service}/add-sparepart', [AdminServiceController::class, 'addUsedSparePart'])->name('service.addSparepart');
     Route::delete('/service/{service}/remove-sparepart/{sparePart}', [AdminServiceController::class, 'removeUsedSparePart'])->name('service.removeSparepart');
+    Route::post('/service/upload-return-proof', [AdminServiceController::class, 'uploadReturnProof'])->name('service.uploadReturnProof');
 
     Route::resource('spare-parts', AdminSparePartController::class);
     Route::post('/spare-parts/{spare_part}/prices', [AdminSparePartController::class, 'storePrice'])->name('spare-parts.prices.store');

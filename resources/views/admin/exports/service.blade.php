@@ -16,6 +16,8 @@
             <th>Nota</th>
             <th>Status</th>
             <th>Permasalahan Aktual</th>
+            <th>Keterangan Dikembalikan</th>
+            <th>Bukti Dikembalikan</th>
         </tr>
     </thead>
     <tbody>
@@ -65,6 +67,14 @@
                 </td>
                 <td>{{ $s->status }}</td>
                 <td>{{ $s->actual_problem }}</td>
+                <td>{{ $s->return_description }}</td>
+                <td>
+                    @if ($s->return_proof)
+                        {!! '=HYPERLINK("' . asset('storage/' . $s->return_proof) . '","Lihat Bukti")' !!}
+                    @else
+                        -
+                    @endif
+                </td>
             </tr>
         @endforeach
     </tbody>

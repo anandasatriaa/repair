@@ -42,6 +42,51 @@
             min-width: 250px;
             vertical-align: top;
         }
+
+        /* Class baru untuk dropdown di tabel agar rapi */
+        .table-select {
+            font-size: 0.875rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Lebar spesifik per tipe dropdown agar tabel tidak goyang */
+        .w-select-type {
+            min-width: 160px;
+        }
+
+        .w-select-price {
+            min-width: 140px;
+        }
+
+        .w-select-status {
+            min-width: 210px;
+        }
+
+        /* Area Input Textarea Tabel */
+        .table-textarea {
+            min-width: 250px;
+            font-size: 0.875rem;
+            resize: vertical;
+            /* User bisa resize vertikal saja */
+        }
+
+        /* --- FOTO THUMBNAIL --- */
+        .img-thumbnail-custom {
+            height: 60px;
+            width: auto;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            padding: 2px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            object-fit: cover;
+        }
+
+        .img-thumbnail-custom:hover {
+            transform: scale(1.05);
+            border-color: #0d6efd;
+        }
     </style>
 
 @endsection
@@ -51,18 +96,24 @@
         <h4 class="mb-4">List Service - {{ strtoupper($category) }}</h4>
         <div class="bg-light rounded p-4">
             @if ($services->isEmpty())
-                <p class="text-muted">Tidak ada permintaan service pada kategori ini.</p>
+                <div class="text-center py-5">
+                    <i class="fa fa-folder-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Tidak ada permintaan service pada kategori ini.</p>
+                </div>
             @else
-                <div class="d-flex align-items-start justify-content-between mb-3 flex-wrap">
+                {{-- HEADER TOOLBAR: LEGEND & ACTION --}}
+                <div
+                    class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-end mb-4 gap-3">
+
                     {{-- Kiri: Legend Status --}}
-                    <div class="me-3">
-                        <div class="mb-1">
-                            <strong>Status Tipe Service:</strong><br>
+                    <div class="d-flex flex-column gap-2 p-3 border rounded bg-white w-100 w-lg-auto">
+                        <div>
+                            <small class="text-muted fw-bold">Status Tipe Service:</small><br>
                             <span class="badge bg-garansi">Garansi</span>
                             <span class="badge bg-non-garansi">Non Garansi</span>
                         </div>
                         <div>
-                            <strong>Status Penyelesaian Service:</strong><br>
+                            <small class="text-muted fw-bold">Status Penyelesaian:</small><br>
                             <span class="badge bg-warning text-dark">ON PROGRESS</span>
                             <span class="badge bg-info">APPROVAL CUSTOMER</span>
                             <span class="badge bg-success">DONE</span>
@@ -70,32 +121,35 @@
                     </div>
 
                     {{-- Kanan: Filter + Export --}}
-                    <div class="d-flex flex-column align-items-start align-items-sm-end mb-3">
+                    {{-- Di HP: Full Width & Stacked. Di Desktop: Inline --}}
+                    <div class="d-flex flex-column flex-md-row gap-2 w-100 w-lg-auto">
+
                         {{-- Dropdown Filter --}}
-                        <select id="filterTypeService" class="form-select form-select-sm mb-2" style="width: 200px;">
+                        <select id="filterTypeService" class="form-select w-100 w-md-auto">
                             <option value="">-- Semua Tipe Service --</option>
                             <option value="Garansi">Garansi</option>
                             <option value="Non Garansi">Non Garansi</option>
                         </select>
 
-                        {{-- Tombol Export di pojok kanan bawah --}}
+                        {{-- Tombol Export --}}
                         <a id="btnExportExcel" href="{{ route('admin.service.export', strtolower($category)) }}"
-                            class="btn btn-success btn-sm align-self-end">
+                            class="btn btn-success w-100 w-md-auto text-nowrap">
                             <i class="fa fa-file-excel me-1"></i>Export Excel
                         </a>
                     </div>
                 </div>
 
                 <div class="table-responsive">
-                    <table id="serviceTable" class="table table-bordered table-striped">
-                        <thead class="table-light">
+                    {{-- Tambahkan class align-middle agar isi tabel rapi vertikal --}}
+                    <table id="serviceTable" class="table table-bordered table-striped align-middle">
+                        <thead class="table-light text-center text-nowrap">
                             <tr>
                                 <th>No</th>
                                 <th>Tanggal</th>
                                 <th>Serial Number</th>
                                 <th>Nama Pelanggan</th>
-                                <th>Email Pelanggan</th>
-                                <th>No Handphone</th>
+                                <th>Email</th>
+                                <th>No HP</th>
                                 <th>Tipe Produk</th>
                                 <th>Tipe Service</th>
                                 <th>Harga</th>
@@ -105,13 +159,17 @@
                                 <th>Nota</th>
                                 <th>Status</th>
                                 <th>Permasalahan Aktual</th>
+                                <th>Ket. Dikembalikan</th>
+                                <th>Bukti Dikembalikan</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($services as $i => $s)
                                 <tr>
-                                    <td>{{ $i + 1 }}</td>
-                                    <td>{{ $s->date->format('d-m-Y') }}</td>
+                                    <td class="text-center">{{ $i + 1 }}</td>
+                                    <td class="text-nowrap">{{ $s->date->format('d-m-Y') }}</td>
+
+                                    {{-- Serial Number --}}
                                     <td class="serial-cell" data-id="{{ $s->id }}">
                                         <div class="serials-wrapper">
                                             @foreach ($s->serials as $ser)
@@ -120,27 +178,30 @@
                                                         class="form-control form-control-sm serial-input me-1"
                                                         data-serial-id="{{ $ser->id }}" list="serialList"
                                                         value="{{ $ser->serial_number }}" placeholder="Serial…"
-                                                        style="min-width: 200px;">
+                                                        style="min-width: 180px;">
                                                     <button type="button" class="btn btn-sm btn-danger remove-serial">
                                                         &times;
                                                     </button>
                                                 </div>
                                             @endforeach
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-success add-serial">
-                                            <i class="fa fa-plus"></i>
+                                        <button type="button" class="btn btn-sm btn-success add-serial mt-1 w-100">
+                                            <i class="fa fa-plus me-1"></i>Serial
                                         </button>
                                     </td>
+
                                     <td>{{ $s->name_customer }}</td>
                                     <td>{{ $s->email_customer }}</td>
                                     <td>{{ $s->handphone_customer }}</td>
                                     <td>{{ $s->type_product }}</td>
+
+                                    {{-- Tipe Service Dropdown --}}
                                     <td>
-                                        <select class="form-select form-select-sm type-service-dropdown"
-                                            data-id="{{ $s->id }}" data-field="type_service"
-                                            style="min-width: 155px; font-size: 0.875rem;">
+                                        <select
+                                            class="form-select form-select-sm type-service-dropdown table-select w-select-type"
+                                            data-id="{{ $s->id }}" data-field="type_service">
                                             <option disabled {{ $s->type_service == null ? 'selected' : '' }}>Pilih Tipe
-                                                Service</option>
+                                            </option>
                                             <option value="Garansi" {{ $s->type_service == 'Garansi' ? 'selected' : '' }}>
                                                 Garansi</option>
                                             <option value="Non Garansi"
@@ -148,6 +209,8 @@
                                             </option>
                                         </select>
                                     </td>
+
+                                    {{-- Harga Dropdown --}}
                                     <td>
                                         @php
                                             $cls =
@@ -159,9 +222,9 @@
                                                             ? 'price-250'
                                                             : ''));
                                         @endphp
-                                        <select class="form-select form-select-sm price-dropdown {{ $cls }}"
-                                            data-id="{{ $s->id }}" data-field="price"
-                                            style="min-width:130px;font-size:0.875rem">
+                                        <select
+                                            class="form-select form-select-sm price-dropdown table-select w-select-price {{ $cls }}"
+                                            data-id="{{ $s->id }}" data-field="price">
                                             <option disabled {{ is_null($s->price) ? 'selected' : '' }}>Pilih Harga
                                             </option>
                                             <option value="75000" {{ $s->price == 75000 ? 'selected' : '' }}>Rp.75.000,-
@@ -172,68 +235,79 @@
                                             </option>
                                         </select>
                                     </td>
+
                                     <td>{{ $s->problem }}</td>
+
+                                    {{-- Sparepart --}}
                                     <td class="sparepart-cell" data-id="{{ $s->id }}">
                                         <div class="spareparts-wrapper">
                                             @foreach ($s->usedSpareParts as $part)
                                                 <div class="sparepart-entry d-flex align-items-center mb-1">
                                                     <input type="text" class="form-control form-control-sm me-1"
-                                                        value="{{ Str::limit($part->description, 30) }} [{{ $part->item_code }}] (Rp {{ number_format($part->pivot->price_at_time_of_use, 0, ',', '.') }})"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        value="{{ Str::limit($part->description, 20) }}..."
+                                                        data-bs-toggle="tooltip"
                                                         title="{{ $part->description }} [{{ $part->item_code }}] (Rp {{ number_format($part->pivot->price_at_time_of_use, 0, ',', '.') }})"
-                                                        readonly style="min-width: 300px;">
+                                                        readonly style="min-width: 200px;">
                                                     <button type="button" class="btn btn-sm btn-danger remove-sparepart"
                                                         data-sparepart-id="{{ $part->id }}">&times;</button>
                                                 </div>
                                             @endforeach
                                         </div>
-                                        <button type="button" class="btn btn-sm btn-info add-sparepart mt-1">
-                                            <i class="fa fa-plus"></i>
+                                        <button type="button"
+                                            class="btn btn-sm btn-info add-sparepart mt-1 w-100 text-white">
+                                            <i class="fa fa-plus me-1"></i>Part
                                         </button>
                                     </td>
-                                    <td data-id="{{ $s->id }}" style="min-width: 250px;">
-                                        <div class="d-flex align-items-center">
+
+                                    {{-- Estimasi --}}
+                                    <td data-id="{{ $s->id }}" style="min-width: 280px;">
+                                        <div class="d-flex align-items-center gap-1">
                                             <input type="date" class="form-control form-control-sm estimation-date"
                                                 name="estimated_start_date"
-                                                value="{{ $s->estimated_start_date ? $s->estimated_start_date->format('Y-m-d') : '' }}"
-                                                title="Tanggal Mulai Estimasi">
-                                            <span class="mx-2">-</span>
+                                                value="{{ $s->estimated_start_date ? $s->estimated_start_date->format('Y-m-d') : '' }}">
+                                            <span>-</span>
                                             <input type="date" class="form-control form-control-sm estimation-date"
                                                 name="estimated_end_date"
-                                                value="{{ $s->estimated_end_date ? $s->estimated_end_date->format('Y-m-d') : '' }}"
-                                                title="Tanggal Selesai Estimasi">
+                                                value="{{ $s->estimated_end_date ? $s->estimated_end_date->format('Y-m-d') : '' }}">
                                         </div>
                                     </td>
-                                    <td>
+
+                                    {{-- Nota --}}
+                                    <td class="text-center">
                                         @if ($s->receipt)
                                             @php
                                                 $path = 'storage/' . $s->receipt;
                                                 $extension = pathinfo($path, PATHINFO_EXTENSION);
+                                                $fullUrl = asset($path);
                                             @endphp
-
-                                            <a href="{{ asset($path) }}" target="_blank">
-                                                @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                                                    <a href="{{ asset($path) }}" target="_blank"
-                                                        class="btn btn-sm btn-outline-dark">
-                                                        <i class="fa fa-file-image me-1"></i> IMG
-                                                    </a>
-                                                @elseif (strtolower($extension) === 'pdf')
-                                                    <a href="{{ asset($path) }}" target="_blank"
-                                                        class="btn btn-sm btn-outline-danger">
-                                                        <i class="fa fa-file-pdf me-1"></i> PDF
-                                                    </a>
-                                                @else
-                                                    <span class="text-muted">-</span>
-                                                @endif
-                                            </a>
+                                            @if (in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+                                                <a href="{{ $fullUrl }}"
+                                                    data-fancybox="gallery-receipt-{{ $s->id }}"
+                                                    data-caption="Nota - {{ $s->name_customer }}">
+                                                    <img src="{{ $fullUrl }}" class="img-thumbnail-custom"
+                                                        alt="Nota">
+                                                </a>
+                                            @elseif (strtolower($extension) === 'pdf')
+                                                <a href="{{ $fullUrl }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa fa-file-pdf"></i> PDF
+                                                </a>
+                                            @else
+                                                <a href="{{ $fullUrl }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fa fa-file"></i> File
+                                                </a>
+                                            @endif
                                         @else
                                             -
                                         @endif
                                     </td>
+
+                                    {{-- Status Dropdown --}}
                                     <td>
-                                        <select class="form-select form-select-sm status-dropdown"
-                                            data-id="{{ $s->id }}" data-field="status"
-                                            style="min-width: 200px; font-size: 0.875rem;">
+                                        <select
+                                            class="form-select form-select-sm status-dropdown table-select w-select-status"
+                                            data-id="{{ $s->id }}" data-field="status">
                                             <option value="ON PROGRESS"
                                                 {{ $s->status == 'ON PROGRESS' ? 'selected' : '' }}>ON PROGRESS</option>
                                             <option value="APPROVAL CUSTOMER"
@@ -243,11 +317,46 @@
                                             </option>
                                         </select>
                                     </td>
-                                    <td style="min-width: 250px;">
-                                        <input type="text" class="form-control form-control-sm actual-problem-input"
-                                            data-id="{{ $s->id }}" data-field="actual_problem"
-                                            value="{{ $s->actual_problem }}"
-                                            placeholder="Masukkan permasalahan aktual...">
+
+                                    {{-- Permasalahan Aktual --}}
+                                    <td>
+                                        <textarea class="form-control form-control-sm actual-problem-input table-textarea" data-id="{{ $s->id }}"
+                                            data-field="actual_problem" rows="2" placeholder="Masalah aktual...">{{ $s->actual_problem }}</textarea>
+                                    </td>
+
+                                    {{-- Ket Dikembalikan --}}
+                                    <td>
+                                        <textarea class="form-control form-control-sm return-description-input table-textarea" data-id="{{ $s->id }}"
+                                            data-field="return_description" rows="2" placeholder="Keterangan...">{{ $s->return_description }}</textarea>
+                                    </td>
+
+                                    {{-- Bukti Dikembalikan --}}
+                                    <td style="min-width: 220px;">
+                                        <div class="d-flex flex-column gap-2">
+                                            <div id="proof-container-{{ $s->id }}" class="text-center">
+                                                @if ($s->return_proof)
+                                                    <a href="{{ asset('storage/' . $s->return_proof) }}"
+                                                        data-fancybox="gallery-proof-{{ $s->id }}"
+                                                        data-caption="Bukti Dikembalikan - {{ $s->name_customer }}">
+                                                        <img src="{{ asset('storage/' . $s->return_proof) }}"
+                                                            class="img-thumbnail-custom" alt="Bukti">
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted small fst-italic no-proof-text">Belum ada
+                                                        bukti</span>
+                                                @endif
+                                            </div>
+
+                                            <div>
+                                                <input type="file"
+                                                    class="form-control form-control-sm return-proof-input"
+                                                    data-id="{{ $s->id }}" accept="image/*">
+                                                <div class="text-end">
+                                                    <small class="text-danger" style="font-size: 0.65rem;">Max:
+                                                        2MB</small>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -263,6 +372,20 @@
 @endsection
 
 @section('scripts')
+
+    <script>
+        // Inisialisasi Fancybox
+        Fancybox.bind("[data-fancybox]", {
+            // Opsi kustom jika diperlukan
+            Toolbar: {
+                display: {
+                    left: ["infobar"],
+                    middle: ["zoomIn", "zoomOut", "toggle1to1", "rotateCCW", "rotateCW"],
+                    right: ["slideshow", "thumbs", "close"],
+                },
+            },
+        });
+    </script>
 
     {{-- UPDATE STATUS & TYPE SERVICE --}}
     <script>
@@ -428,11 +551,12 @@
                 sendUpdate(this);
             });
 
-            $tableBody.on('blur', '.actual-problem-input', function() {
+            $tableBody.on('blur', '.actual-problem-input, .return-description-input', function() {
                 const $input = $(this);
                 const id = $input.data('id');
                 const field = $input.data('field');
                 const value = $input.val();
+
                 fetch(updateFieldUrl, {
                         method: 'POST',
                         headers: {
@@ -451,6 +575,90 @@
                             'Permasalahan disimpan' : 'Gagal menyimpan');
                     })
                     .catch(() => showToast('error', 'Kesalahan server'));
+            });
+
+            const uploadProofUrl = @json(route('admin.service.uploadReturnProof'));
+
+            $tableBody.on('change', '.return-proof-input', function() {
+                const $input = $(this);
+                const file = this.files[0];
+                const id = $input.data('id');
+
+                // 1. Cek apakah ada file
+                if (!file) return;
+
+                // 2. Cek Tipe File (Harus Gambar)
+                if (!file.type.match('image.*')) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Format Salah',
+                        text: 'Hanya file gambar (JPG, PNG, dll) yang diperbolehkan.',
+                        confirmButtonColor: '#3085d6',
+                    });
+                    $input.val(''); // Reset input
+                    return;
+                }
+
+                // 3. Cek Ukuran File (Max 2MB)
+                // 2MB = 2 * 1024 * 1024 bytes = 2,097,152 bytes
+                const maxSize = 2 * 1024 * 1024;
+
+                if (file.size > maxSize) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File Terlalu Besar!',
+                        text: 'Ukuran foto maksimal adalah 2MB. Silakan kompres foto Anda atau pilih foto lain.',
+                        confirmButtonColor: '#d33',
+                    });
+
+                    $input.val(''); // Reset input agar user bisa memilih ulang
+                    return; // Hentikan proses, jangan lanjut ke AJAX
+                }
+
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('file', file);
+                formData.append('_token', '{{ csrf_token() }}');
+
+                showLoadingToast(); // Tampilkan loading
+
+                $.ajax({
+                    url: uploadProofUrl,
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        Swal.close();
+                        if (response.success) {
+                            showToast('success', 'Bukti berhasil diupload');
+
+                            const container = $(`#proof-container-${id}`);
+
+                            // Hapus teks "Belum ada bukti" jika ada
+                            container.find('.no-proof-text').remove();
+
+                            // Replace isi container dengan gambar baru yang terbungkus Fancybox
+                            container.html(`
+                                <a href="${response.path}" 
+                                   data-fancybox="gallery-proof-${id}" 
+                                   data-caption="Bukti Dikembalikan (Baru)">
+                                    <img src="${response.path}" 
+                                         class="img-thumbnail-custom" alt="Bukti">
+                                </a>
+                            `);
+
+                            // Reset input file agar bisa upload ulang file yang sama jika perlu
+                            $input.val('');
+                        } else {
+                            showToast('error', response.message || 'Gagal upload');
+                        }
+                    },
+                    error: function() {
+                        Swal.close();
+                        showToast('error', 'Terjadi kesalahan saat upload');
+                    }
+                });
             });
 
             $tableBody.on('change', '.estimation-date', function() {

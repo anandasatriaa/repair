@@ -33,6 +33,9 @@
     <!-- DataTables CSS -->
     <link href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css" rel="stylesheet">
 
+    {{-- CSS Fancybox --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
+
     @yield('styles')
 </head>
 
@@ -232,6 +235,9 @@
 
     <!-- Select2 -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    {{-- JS Fancybox --}}
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
 
     {{-- Ananda Satria Ariyanto --}}
     <script>

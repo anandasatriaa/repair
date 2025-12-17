@@ -44,14 +44,16 @@ class ServiceExport implements FromView, ShouldAutoSize, WithEvents
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet     = $event->sheet->getDelegate();
                 $highestRow = $sheet->getHighestRow();
-                
-                $sheet->getStyle("M2:M{$highestRow}")
-                    ->applyFromArray([
-                        'font' => [
-                            'color'      => ['rgb' => '0000FF'],
-                            'underline'  => true,
-                        ],
-                    ]);
+
+                $linkStyle = [
+                    'font' => [
+                        'color'     => ['rgb' => '0000FF'],
+                        'underline' => true,
+                    ],
+                ];
+
+                $sheet->getStyle("M2:M{$highestRow}")->applyFromArray($linkStyle);
+                $sheet->getStyle("Q2:Q{$highestRow}")->applyFromArray($linkStyle);
             },
         ];
     }

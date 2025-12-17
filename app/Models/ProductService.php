@@ -24,6 +24,8 @@ class ProductService extends Model
         'actual_problem',
         'estimated_start_date',
         'estimated_end_date',
+        'return_description',
+        'return_proof',
     ];
 
     protected $casts = [

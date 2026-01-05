@@ -27,8 +27,23 @@
             color: #fff !important;
         }
 
+        .price-150 {
+            background-color: #198754 !important;
+            color: #fff !important;
+        }
+
+        .price-200 {
+            background-color: #6f42c1 !important;
+            color: #fff !important;
+        }
+
         .price-250 {
             background-color: #d63384 !important;
+            color: #fff !important;
+        }
+
+        .price-custom {
+            background-color: #6c757d !important;
             color: #fff !important;
         }
 
@@ -213,15 +228,28 @@
                                     {{-- Harga Dropdown --}}
                                     <td>
                                         @php
-                                            $cls =
-                                                $s->price == 75000
-                                                    ? 'price-75'
-                                                    : ($s->price == 100000
-                                                        ? 'price-100'
-                                                        : ($s->price == 250000
-                                                            ? 'price-250'
-                                                            : ''));
+                                            $predefinedPrices = [75000, 100000, 150000, 200000, 250000];
+                                            $isCustom =
+                                                !is_null($s->price) &&
+                                                !in_array($s->price, $predefinedPrices) &&
+                                                $s->price > 0;
+
+                                            $cls = '';
+                                            if ($s->price == 75000) {
+                                                $cls = 'price-75';
+                                            } elseif ($s->price == 100000) {
+                                                $cls = 'price-100';
+                                            } elseif ($s->price == 150000) {
+                                                $cls = 'price-150';
+                                            } elseif ($s->price == 200000) {
+                                                $cls = 'price-200';
+                                            } elseif ($s->price == 250000) {
+                                                $cls = 'price-250';
+                                            } elseif ($isCustom) {
+                                                $cls = 'price-custom';
+                                            }
                                         @endphp
+
                                         <select
                                             class="form-select form-select-sm price-dropdown table-select w-select-price {{ $cls }}"
                                             data-id="{{ $s->id }}" data-field="price">
@@ -231,7 +259,20 @@
                                             </option>
                                             <option value="100000" {{ $s->price == 100000 ? 'selected' : '' }}>Rp.100.000,-
                                             </option>
+                                            <option value="150000" {{ $s->price == 150000 ? 'selected' : '' }}>Rp.150.000,-
+                                            </option>
+                                            <option value="200000" {{ $s->price == 200000 ? 'selected' : '' }}>Rp.200.000,-
+                                            </option>
                                             <option value="250000" {{ $s->price == 250000 ? 'selected' : '' }}>Rp.250.000,-
+                                            </option>
+
+                                            {{-- Jika harga di DB adalah harga custom, tampilkan sebagai opsi terpilih --}}
+                                            @if ($isCustom)
+                                                <option value="{{ $s->price }}" selected>
+                                                    Rp.{{ number_format($s->price, 0, ',', '.') }},-</option>
+                                            @endif
+
+                                            <option value="other" style="font-weight: bold; color: #000;">+ Lainnya...
                                             </option>
                                         </select>
                                     </td>
@@ -439,18 +480,15 @@
 
             // **baru: price-dropdown**
             document.querySelectorAll('.price-dropdown').forEach(select => {
-                select.classList.remove('price-75', 'price-100', 'price-250', 'text-white', 'text-dark');
-                switch (select.value) {
-                    case '75000':
-                        select.classList.add('price-75', 'text-white');
-                        break;
-                    case '100000':
-                        select.classList.add('price-100', 'text-white');
-                        break;
-                    case '250000':
-                        select.classList.add('price-250', 'text-white');
-                        break;
-                }
+                select.classList.remove('price-75', 'price-100', 'price-150', 'price-200', 'price-250',
+                    'price-custom', 'text-white');
+                const val = select.value;
+                if (val === '75000') select.classList.add('price-75', 'text-white');
+                else if (val === '100000') select.classList.add('price-100', 'text-white');
+                else if (val === '150000') select.classList.add('price-150', 'text-white');
+                else if (val === '200000') select.classList.add('price-200', 'text-white');
+                else if (val === '250000') select.classList.add('price-250', 'text-white');
+                else if (val !== '' && val !== 'other') select.classList.add('price-custom', 'text-white');
             });
         }
 
@@ -547,8 +585,44 @@
             // --- EVENT HANDLERS UTAMA (TETAP SAMA) ---
             const $tableBody = $('#serviceTable tbody');
 
-            $tableBody.on('change', '.type-service-dropdown, .status-dropdown, .price-dropdown', function() {
+            $tableBody.on('change', '.type-service-dropdown, .status-dropdown', function() {
                 sendUpdate(this);
+            });
+
+            $tableBody.on('change', '.price-dropdown', function() {
+                const $select = $(this);
+                const val = $select.val();
+
+                if (val === 'other') {
+                    Swal.fire({
+                        title: 'Input Harga Manual',
+                        input: 'number',
+                        inputLabel: 'Masukkan nominal harga (angka saja)',
+                        inputPlaceholder: 'Contoh: 175000',
+                        showCancelButton: true,
+                        confirmButtonText: 'Simpan',
+                        cancelButtonText: 'Batal',
+                        inputValidator: (value) => {
+                            if (!value || value <= 0) {
+                                return 'Harga harus lebih dari 0!'
+                            }
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const manualPrice = result.value;
+
+                            $select.find('option[value="other"]').before(
+                                `<option value="${manualPrice}" selected>Rp.${parseInt(manualPrice).toLocaleString('id-ID')},-</option>`
+                            );
+
+                            sendUpdate($select[0]);
+                        } else {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    sendUpdate(this);
+                }
             });
 
             $tableBody.on('blur', '.actual-problem-input, .return-description-input', function() {
